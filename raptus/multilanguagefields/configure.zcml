@@ -1,0 +1,58 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:five="http://namespaces.zope.org/five"
+    i18n_domain="MultilanguageFields">
+    
+  <five:registerPackage package="." />
+      
+  <include package=".indexes" />      
+  <include package=".kss" />
+
+  <!-- Register the installation GenericSetup extension profile -->
+  <genericsetup:registerProfile
+      name="default"
+      title="MultilanguageFields"
+      directory="profiles/default"
+      description="Provides multilanguage fields and widgets"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      />
+
+  <genericsetup:registerProfile
+      name="uninstall"
+      title="MultilanguageFields"
+      directory="profiles/uninstall"
+      description="Uninstalls multilanguage fields and widgets"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      />
+
+  <utility 
+      component=".multilanguagefieldsdomain"
+      name="raptus.multilanguagefields" />
+
+  <!-- File System Directory Views registration -->
+  <cmf:registerDirectory
+      name="multilanguagefields"
+      recursive="True"/>
+      
+  <browser:pages
+      for="*"
+      class=".browser.Translation"
+      permission="cmf.ModifyPortalContent">
+    <browser:page 
+        attribute="getRawTranslation"
+        name="getRawTranslation" />
+    <browser:page 
+        attribute="getTranslation"
+        name="getTranslation" />
+    <browser:page 
+        attribute="getTranslator"
+        name="getTranslator" />
+  </browser:pages>
+
+</configure>

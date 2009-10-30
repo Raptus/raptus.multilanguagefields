@@ -1,0 +1,65 @@
+/* <dtml-with base_properties> (do not remove this :) */
+/* <dtml-call "REQUEST.set('portal_url', portal_url())"> (not this either :) */
+
+.languageMultiplier ul.formTabs {
+  text-align: left;
+  font-size: 0.85em;
+}
+
+.languageMultiplier dl.enableFormTabbing dd {
+  padding-top: 1em;
+}
+
+.languageMultiplier .formPanel {
+  border: none;
+  padding: 1em 0 0 0 !important;
+}
+
+.languageMultiplier li.formTab a {
+  border-color: &dtml-contentViewBorderColor;;
+  color: &dtml-contentViewFontColor;;
+  outline: none;
+}
+
+.languageMultiplier li.formTab a.selected {
+  background: &dtml-contentViewBackgroundColor;;
+}
+
+.languageMultiplier li.formTab a:hover {
+  background: &dtml-contentViewBackgroundColor;;
+}
+
+.languageMultiplier .translator {
+  border: &dtml-borderWidth; &dtml-borderStyle; &dtml-contentViewBorderColor;;
+  background-color: &dtml-contentViewBackgroundColor;;
+  padding: 0.5em 1em;
+  margin:0.2em 0 2em 0;
+  line-height:1.5em;
+}
+
+#visual-portal-wrapper .languageMultiplier .translator .context {
+  border: &dtml-borderWidth; &dtml-borderStyle; &dtml-contentViewBorderColor; !important;
+  font-size:1em !important;
+  padding:0 0.5em !important;
+  background:none #fff no-repeat !important;
+  width:auto !important;
+}
+
+.languageMultiplier .translator .spinner {
+  display:none;
+  border: &dtml-borderWidth; &dtml-borderStyle; &dtml-contentViewBorderColor;;
+}
+
+.inlineForm {
+  margin:0;
+}
+
+.inlineForm .languageMultiplier {
+  font-size:&dtml-fontBaseSize; !important;
+}
+
+.inlineForm .languageMultiplier .translator {
+  margin-bottom:0;
+}
+
+/* </dtml-with> */

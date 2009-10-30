@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
+
+    <!-- Multilanguage Rich Widgets -->
+    <metal:view_macro define-macro="view">
+      <metal:view use-macro="here/widgets/rich/macros/view" />
+    </metal:view_macro>
+
+    <metal:define define-macro="edit"
+                  tal:define="widget_name string:rich">
+      <metal:use use-macro="here/multiplier/macros/tabs" />
+    </metal:define>
+
+    <div metal:define-macro="search">
+      <div metal:use-macro="here/widgets/rich/macros/edit" />
+    </div>
+
+  </body>
+
+</html>
+

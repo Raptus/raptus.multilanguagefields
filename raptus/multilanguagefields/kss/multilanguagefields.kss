@@ -1,0 +1,7 @@
+.inlineForm .hasTranslator:load {
+  action-client: translator;
+}
+
+.inlineForm .enableFormTabbing:load {
+  action-client: formTabbing;
+}

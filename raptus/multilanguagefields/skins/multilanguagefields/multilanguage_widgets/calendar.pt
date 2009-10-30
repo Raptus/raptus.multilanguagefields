@@ -1,0 +1,25 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
+
+    <!-- Multilanguage Calendar Widgets -->
+    <metal:view_macro define-macro="view">
+      <metal:view use-macro="here/widgets/calendar/macros/view" />
+    </metal:view_macro>
+
+    <metal:define define-macro="edit"
+                  tal:define="widget_name string:calendar">
+      <metal:use use-macro="here/multiplier/macros/tabs" />
+    </metal:define>
+
+    <metal:define define-macro="search">
+      <metal:use use-macro="here/widgets/calendar/macros/search" />
+    </metal:define>
+
+  </body>
+
+</html>

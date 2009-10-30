@@ -1,0 +1,34 @@
+# Simon Käser <skaeser@raptus.com>, 2009
+msgid ""
+msgstr ""
+"Project-Id-Version: raptus.multilanguagefields\n"
+"POT-Creation-Date: 2009-02-17 15:41+0000\n"
+"PO-Revision-Date: 2009-04-09 09:49+0100\n"
+"Last-Translator: Simon Käser <skaeser@raptus.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language-Code: de\n"
+"Language-Name: Deutsch\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: raptus.multilanguagefields\n"
+"X-Is-Fallback-For: de-at de-li de-lu de-ch de-de\n"
+"Language-Team: \n"
+
+#. Default: "Translate into"
+msgid "label_translate_into"
+msgstr "Übersetzen in"
+
+#. Default: "All languages"
+msgid "label_all"
+msgstr "Alle Sprachen"
+
+#. Default: "translate"
+msgid "label_translate"
+msgstr "übersetzen"
+
+#. Default: "translate"
+msgid "message_translate"
+msgstr "Sind Sie sicher, dass Sie den momentanen Wert der Sprache \"{language}\" durch die generierte Übersetzung \"{translation}\" ersetzen wollen?"
+

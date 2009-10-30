@@ -1,0 +1,17 @@
+<configure 
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:kss="http://namespaces.zope.org/kss">
+
+    <kss:action 
+        name="multilanguagefields-plugins"
+        command_factory="selector"
+        params_mandatory="elm"
+        jsfile="plugins.js" />
+        
+    <browser:resource
+        file="multilanguagefields.kss"
+        name="multilanguagefields.kss"
+        />
+
+</configure>

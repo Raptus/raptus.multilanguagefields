@@ -1,0 +1,3 @@
+# backward compatibility
+from RegexValidator import MultilanguageRegexValidator
+from RangeValidator import MultilanguageRangeValidator

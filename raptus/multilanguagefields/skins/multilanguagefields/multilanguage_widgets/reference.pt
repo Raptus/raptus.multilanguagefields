@@ -1,0 +1,24 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
+
+    <!-- Multilanguage Reference Widgets -->
+    <metal:view_macro define-macro="view">
+      <metal:view use-macro="here/widgets/reference/macros/view" />
+    </metal:view_macro>
+
+    <metal:define define-macro="edit"
+                  tal:define="widget_name string:reference">
+      <metal:use use-macro="here/multiplier/macros/tabs" />
+    </metal:define>
+
+    <metal:search_macro define-macro="search">
+      <div metal:use-macro="here/widgets/reference/macros/edit" />
+    </metal:search_macro>
+
+  </body>
+</html>

@@ -1,0 +1,20 @@
+<div class="translator" i18n:domain="raptus.multilanguagefields"
+     tal:attributes="class string:translator ${options/fieldName} ${options/lang}">
+  <span i18n:translate="label_translate_into">
+    Translate into
+  </span>
+  <select name="language" size="1"
+          tal:attributes="id string:language${options/id};
+                          name string:language${options/id}">
+    <option value="all" i18n:translate="label_all">All languages</option>
+    <tal:option tal:repeat="lang options/languages">
+    <option tal:attributes="value lang/name"
+            tal:content="lang/title">Language</option>
+    </tal:option>
+  </select>
+  <a href="javascript://" class="context" i18n:translate="label_translate"
+     tal:attributes="id string:translate${options/id}">
+    translate
+  </a>
+  <img class="spinner" src="spinner.gif" alt="" tal:attributes="src string:${context/@@plone_portal_state/portal_url}/spinner.gif" />
+</div>

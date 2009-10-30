@@ -1,0 +1,43 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
+
+    <metal:define define-macro="tabs"
+                  tal:define="translator python: (widget_name in ('lines', 'keyword', 'rich', 'string', 'textarea')) and (' hasTranslator ' + widget_name) or '';
+                              languages python:field.getAvailableLanguages(context);
+                              translate python:len(languages) > 1">
+      <div class="languageMultiplier"
+           tal:omit-tag="not: translate"
+           tal:attributes="class string:languageMultiplier${translator}">
+      <metal:use use-macro="field_macro | here/widgets/field/macros/edit">
+        <dl metal:fill-slot="widget_body"
+            tal:omit-tag="not: translate"
+            class="enableFormTabbing"
+            tal:define="fName fieldName;
+                        field_macro here/multilanguage_widgets/field/macros/edit;">
+          <tal:lang repeat="lang languages">
+          <tal:def define="fieldName string:${fName}___${lang/name}___;
+                           accessor python:field.getCallable(context, lang['name']);
+                           value python:getMethod and getMethod(lang=lang['name']);
+                           value python:widget.postback and request.get(fieldName, here.session_restore_value(fieldName, value)) or value;">
+          <dt tal:attributes="id string:fieldsetlegend-${fName}-${lang/name}" tal:content="lang/title"
+              tal:condition="translate">Language</dt>
+          <dd tal:attributes="id string:fieldset-${fName}-${lang/name}"
+              tal:omit-tag="not: translate">
+            <div metal:use-macro="python: path('here/widgets/%s/macros/edit' % widget_name)" />
+          </dd>
+          </tal:def>
+          </tal:lang>
+        </dl>
+      </metal:use>
+      </div>
+    </metal:define>
+
+  </body>
+</html>
