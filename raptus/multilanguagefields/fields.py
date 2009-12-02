@@ -4,6 +4,7 @@ from zope.interface import implements
 from zope.component import queryMultiAdapter
 from zope.app.component.hooks import getSite
 
+from Products.Archetypes.ClassGen import Generator, ClassGenerator
 from Products.Archetypes.utils import shasattr
 from Products.Archetypes import Field as fields
 from Products.Archetypes.Registry import registerField
@@ -73,7 +74,12 @@ class MultilanguageFieldMixin(object):
             kw.update(kwargs.get(lang, {}))
             super(MultilanguageFieldMixin, self).set(instance, val, **kw)
         self.resetLanguage()
-
+        if not hasattr(instance, self.getName()):
+            generator = Generator()
+            classgenerator = ClassGenerator()
+            generator.makeMethod(type(instance.aq_base), self, 'r', self.getName())
+            classgenerator.updateSecurity(type(instance.aq_base), self, 'r', self.getName())
+    
     security.declarePrivate('get')
     def get(self, instance, **kwargs):
         name = self.getName()
