@@ -1,8 +1,15 @@
 Changelog
 =========
 
-0.1 - Unreleased
-----------------
+0.2 - (2009-12-02)
+------------------
+
+* Added README.txt
+* Metadata of catalog brains now contains value of current language rather than a MultilanguageAware object (fixes issues when converting to unicode)
+* Added attribute access
+
+0.1 - (2009-10-30)
+------------------
 
 * Initial release
 
