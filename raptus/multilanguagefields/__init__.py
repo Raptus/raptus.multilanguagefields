@@ -1,12 +1,16 @@
 from Missing import MV
+from AccessControl import ClassSecurityInfo
 from persistent import Persistent
 from persistent.dict import PersistentDict
 from ZODB.POSException import ConflictError
 from zope.interface import implements
 from zope.app.component.hooks import getSite
 
+from Record import Record
+from Products.ZCatalog import CatalogBrains
 from Products.Archetypes import BaseObject, Schema
 from Products.ZCatalog.Catalog import Catalog, safe_callable
+from Products.CMFCore.permissions import View
 from Products.CMFPlone import utils
 from Products.CMFPlone.browser.ploneview import Plone
 
@@ -28,10 +32,14 @@ from raptus.multilanguagefields.interfaces import IMultilanguageAware, IMultilan
 class MultilanguageAware(Persistent):
     """a multilanguage aware persistent proxy"""
     implements(IMultilanguageAware)
+    security = ClassSecurityInfo()
     def __init__(self, values):
         self._values = PersistentDict(values)
         Persistent.__init__(self)
+    security.declareProtected(View, "__call__")
     def __call__(self):
+        """
+        """
         return self.data
     def _getCurrentLanguage(self):
         return getToolByName(getSite(), 'portal_languages').getPreferredLanguage()
@@ -54,6 +62,16 @@ class MultilanguageAware(Persistent):
 
 # monkey patches
 
+# CatalogBrain monkey patch
+def init(self, data):
+    ndata = []
+    for v in data:
+        if IMultilanguageAware.providedBy(v):
+            v = str(v)
+        ndata.append(v)
+    Record.__init__(self, tuple(ndata))
+CatalogBrains.AbstractCatalogBrain.__init__ = init
+
 # catalog monkey patch to support languageaware metadata
 def _recordify(self, object):
     """ turns an object into a record tuple """
@@ -71,41 +89,6 @@ def _recordify(self, object):
         record.append(attr)
     return tuple(record)
 Catalog.recordify = _recordify
-
-# safe_unicode monkey patch
-_base_safe_unicode = utils.safe_unicode
-def _safe_unicode(value, encoding='utf-8'):
-    if IMultilanguageAware.providedBy(value):
-        value = str(value)
-    return _base_safe_unicode(value, encoding)
-utils.safe_unicode = _safe_unicode
-
-# cropText monkey patch
-Plone._cropText = Plone.cropText
-def _cropText(self, text, length, ellipsis='...'):
-    if IMultilanguageAware.providedBy(text):
-        text = str(text)
-    return self._cropText(text, length, ellipsis)
-Plone.cropText = _cropText
-
-# Archetypes monkey patch
-def _decode(value, instance, **kwargs):
-    """ensure value is an unicode string"""
-    if isinstance(value, str):
-        encoding = kwargs.get('encoding')
-        if encoding is None:
-            try:
-                encoding = instance.getCharset()
-            except AttributeError:
-                # that occurs during object initialization
-                # (no acquisition wrapper)
-                encoding = 'UTF8'
-        if IMultilanguageAware.providedBy(value):
-            # we have a multilanguage aware string
-            value = value.data
-        value = unicode(value, encoding)
-    return value
-Field.decode = _decode
 
 # SearchableText monkey patch to support languageaware searches
 def _SearchableText(self, lang=None):
