@@ -67,7 +67,7 @@ def init(self, data):
     ndata = []
     for v in data:
         if IMultilanguageAware.providedBy(v):
-            v = str(v)
+            v = v()
         ndata.append(v)
     Record.__init__(self, tuple(ndata))
 CatalogBrains.AbstractCatalogBrain.__init__ = init
