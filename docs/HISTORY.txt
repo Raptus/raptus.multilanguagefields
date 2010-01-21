@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.3 - (Unreleased)
+------------------
+
+* fixed UnicodeEncodeError in CatalogBrain monkey patch
+
 0.2 - (2009-12-02)
 ------------------
 
