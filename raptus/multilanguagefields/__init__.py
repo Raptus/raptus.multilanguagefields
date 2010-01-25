@@ -27,6 +27,8 @@ initialize(validation)
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import Field
 
+import criteria
+
 from raptus.multilanguagefields.interfaces import IMultilanguageAware, IMultilanguageField
 
 class MultilanguageAware(Persistent):
@@ -149,6 +151,9 @@ def _getField(self, key, wrapped=False):
         key = key[:key.find('___')]
     return self.Schema().get(key)
 BaseObject.BaseObject.getField = _getField
+
+# ATContentTypes criteria monkey patch
+
 
 # Schemata monkey patch
 def _checkPropertyDupe(self, field, propname):
