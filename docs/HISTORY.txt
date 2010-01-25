@@ -4,6 +4,7 @@ Changelog
 0.3 - (Unreleased)
 ------------------
 
+* added multilanguageindexes to atct criterion registry
 * fixed UnicodeEncodeError in CatalogBrain monkey patch
 
 0.2 - (2009-12-02)
