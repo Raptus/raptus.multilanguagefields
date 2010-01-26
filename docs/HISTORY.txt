@@ -1,9 +1,10 @@
 Changelog
 =========
 
-0.3 - (Unreleased)
+0.3 - (2009-12-26)
 ------------------
 
+* added default atct indices to new criteriona registrations as the old ones are overwritten
 * added multilanguageindexes to atct criterion registry
 * fixed UnicodeEncodeError in CatalogBrain monkey patch
 
