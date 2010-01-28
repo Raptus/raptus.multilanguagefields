@@ -38,8 +38,7 @@ class MultilanguageZCTextIndex(ZCTextIndex):
 
     def _set_index(self, value):
         if not self._v_lang:
-            for lang in self.languages:
-                setattr(self, '_index_%s' % lang, value)
+            setattr(self, '_index_%s' % self._getCurrentLanguage(), value)
         else:
             setattr(self, '_index_%s' % self._v_lang, value)
 

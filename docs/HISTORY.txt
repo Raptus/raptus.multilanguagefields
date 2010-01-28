@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.5 - (2010-01-28)
+------------------
+
+* bugfix in multilanguage ZCTextIndex where index setter set the same value for indexes of all languages
+
 0.4 - (2010-01-28)
 ------------------
 
