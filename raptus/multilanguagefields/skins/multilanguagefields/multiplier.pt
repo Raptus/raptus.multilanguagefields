@@ -23,6 +23,7 @@
                         field_macro here/multilanguage_widgets/field/macros/edit;">
           <tal:lang repeat="lang languages">
           <tal:def define="fieldName string:${fName}___${lang/name}___;
+                           dummy python:field.setLanguage(lang['name']);
                            accessor python:field.getCallable(context, lang['name']);
                            value python:getMethod and getMethod(lang=lang['name']);
                            value python:widget.postback and request.get(fieldName, here.session_restore_value(fieldName, value)) or value;">
@@ -34,6 +35,7 @@
           </dd>
           </tal:def>
           </tal:lang>
+          <tal:reset define="dummy python:field.resetLanguage()" />
         </dl>
       </metal:use>
       </div>

@@ -1,7 +1,12 @@
 Changelog
 =========
 
-0.3 - (2009-12-26)
+0.4 - (2010-01-28)
+------------------
+
+* added support for multilanguage image fields
+
+0.3 - (2010-01-26)
 ------------------
 
 * added default atct indices to new criteriona registrations as the old ones are overwritten

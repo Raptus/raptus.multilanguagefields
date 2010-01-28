@@ -164,7 +164,43 @@ class BooleanField(MultilanguageFieldMixin, fields.BooleanField):
     
 class ImageField(MultilanguageFieldMixin, fields.ImageField):
     _properties = fields.ImageField._properties.copy()
-    # XXX: Fix me (not working)
+    
+    security = ClassSecurityInfo()
+    
+    security.declareProtected(View, 'getScale')
+    def getScale(self, instance, scale=None, **kwargs):
+        """Get scale by name or original
+        """
+        if self._v_lang and not kwargs.has_key('lang'):
+            return super(ImageField, self).getScale(instance, scale, **kwargs)
+        if not kwargs.has_key('lang'):
+            kwargs['lang'] = self._getCurrentLanguage(instance)
+        self.setLanguage(kwargs['lang'])
+        image = super(ImageField, self).getScale(instance, scale, **kwargs)
+        self.resetLanguage()
+        return image
+    
+    security.declarePrivate('get')
+    def get(self, instance, **kwargs):
+        value = self._wrapValue(instance, super(ImageField, self).get(instance, **kwargs))
+        if (shasattr(value, '__of__', acquire=True)
+            and not kwargs.get('unwrapped', False)):
+            return value.__of__(instance)
+        return value
+
+    security.declareProtected(View, 'tag')
+    def tag(self, instance, scale=None, height=None, width=None, alt=None,
+            css_class=None, title=None, **kwargs):
+        """Create a tag including scale
+        """
+        if self._v_lang and not kwargs.has_key('lang'):
+            return super(ImageField, self).tag(instance, scale, height, width, alt, css_class, title, **kwargs)
+        if not kwargs.has_key('lang'):
+            kwargs['lang'] = self._getCurrentLanguage(instance)
+        self.setLanguage(kwargs['lang'])
+        tag = super(ImageField, self).tag(instance, scale, height, width, alt, css_class, title, **kwargs)
+        self.resetLanguage()
+        return tag
     
 registerField(StringField,
               title='Multilanguage String',
