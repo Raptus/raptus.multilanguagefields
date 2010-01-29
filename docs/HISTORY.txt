@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.6 - (2010-01-29)
+------------------
+
+* changed criterion indices registration to avoid warning messages on startup
+
 0.5 - (2010-01-28)
 ------------------
 
@@ -14,7 +19,7 @@ Changelog
 0.3 - (2010-01-26)
 ------------------
 
-* added default atct indices to new criteriona registrations as the old ones are overwritten
+* added default atct indices to new criterion registrations as the old ones are overwritten
 * added multilanguageindexes to atct criterion registry
 * fixed UnicodeEncodeError in CatalogBrain monkey patch
 
