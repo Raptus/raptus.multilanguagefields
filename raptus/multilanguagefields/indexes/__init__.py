@@ -11,8 +11,6 @@ from Products.ZCTextIndex import getIndexTypes
 from Products.CMFPlone.utils import safe_callable, safe_unicode
 from Products.CMFPlone.CatalogTool import registerIndexableAttribute, num_sort_regex, zero_fill
 
-_wwwPath = '%s/www' % PluginIndexes.__path__[0]
-
 _indexes =  ('KeywordIndex',
              'FieldIndex',
              'DateIndex',
@@ -55,9 +53,9 @@ def initialize(context):
             permission='Add Pluggable Index', \
             constructors=(manage_addMultilanguage%sForm,\
                           manage_addMultilanguage%s),\
-            icon='%s/index.gif',\
+            icon='../www/index.gif',\
             visibility=None\
-         )" % (idx,idx,idx,idx,_wwwPath)
+         )" % (idx,idx,idx,idx)
 
         exec(s)
 
@@ -67,7 +65,7 @@ def initialize(context):
         constructors = (ZCTextIndex.manage_addMultilanguageZCTextIndexForm,
                         ZCTextIndex.manage_addMultilanguageZCTextIndex,
                         getIndexTypes),
-        icon='%s/index.gif' % _wwwPath,
+        icon='../www/index.gif',
         visibility=None
     )
 
