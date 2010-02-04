@@ -24,7 +24,7 @@
 
   <genericsetup:registerProfile
       name="uninstall"
-      title="MultilanguageFields"
+      title="MultilanguageFields Uninstall"
       directory="profiles/uninstall"
       description="Uninstalls multilanguage fields and widgets"
       provides="Products.GenericSetup.interfaces.EXTENSION"
