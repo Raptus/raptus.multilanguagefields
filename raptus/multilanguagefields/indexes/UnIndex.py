@@ -11,9 +11,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.UnIndex import UnIndex, _marker
 
-from raptus.multilanguagefields import MultilanguageAware
-from raptus.multilanguagefields.interfaces import IMultilanguageAware
-
 class MultilanguageUnIndex(UnIndex):
     """Multilanguage aware forward and reverse index.
     """

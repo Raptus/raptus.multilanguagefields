@@ -19,6 +19,14 @@ multilanguagefieldsMessageFactory = MessageFactory('raptus.multilanguagefields')
 from Products.PlacelessTranslationService.utility import PTSTranslationDomain
 multilanguagefieldsdomain = PTSTranslationDomain('raptus.multilanguagefields')
 
+from indexes import FieldIndex, \
+                    KeywordIndex, \
+                    DateIndex, \
+                    DateRangeIndex, \
+                    ZCTextIndex
+                    
+from Products.ZCTextIndex import getIndexTypes                    
+
 # initialize validators
 from raptus.multilanguagefields.validators import initialize
 from Products.validation.config import validation
@@ -171,3 +179,41 @@ def _checkPropertyDupe(self, field, propname):
             return f, got
     return False
 Schema.Schemata._checkPropertyDupe = _checkPropertyDupe
+
+_indexes =  ('KeywordIndex',
+             'FieldIndex',
+             'DateIndex',
+             'DateRangeIndex',
+            )
+    
+def initialize(context):
+
+    for idx in _indexes:
+
+        s = "context.registerClass( \
+            %s.Multilanguage%s,\
+            permission='Add Pluggable Index', \
+            constructors=(manage_addMultilanguage%sForm,\
+                          manage_addMultilanguage%s),\
+            icon='www/index.gif',\
+            visibility=None\
+         )" % (idx,idx,idx,idx)
+
+        exec(s)
+
+    context.registerClass(
+        ZCTextIndex.MultilanguageZCTextIndex,
+        permission = 'Add Pluggable Index',
+        constructors = (ZCTextIndex.manage_addMultilanguageZCTextIndexForm,
+                        ZCTextIndex.manage_addMultilanguageZCTextIndex,
+                        getIndexTypes),
+        icon='www/index.gif',
+        visibility=None
+    )
+
+
+for idx in _indexes:
+
+    exec("manage_addMultilanguage%sForm = %s.manage_addMultilanguage%sForm" % (idx,idx,idx))
+    exec("manage_addMultilanguage%s     = %s.manage_addMultilanguage%s" % (idx,idx,idx))
+    

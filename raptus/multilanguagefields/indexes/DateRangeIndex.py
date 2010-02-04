@@ -11,9 +11,6 @@ from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.DateRangeIndex.DateRangeIndex import DateRangeIndex, \
                                                                  VIEW_PERMISSION, \
                                                                  INDEX_MGMT_PERMISSION
-
-from raptus.multilanguagefields import MultilanguageAware
-from raptus.multilanguagefields.interfaces import IMultilanguageAware
 from raptus.multilanguagefields.indexes.UnIndex import MultilanguageUnIndex
 
 class MultilanguageDateRangeIndex(MultilanguageUnIndex, DateRangeIndex):

@@ -8,9 +8,6 @@ from Globals import DTMLFile
 from Products.PluginIndexes.common import safe_callable
 
 from Products.PluginIndexes.DateIndex.DateIndex import DateIndex, _marker
-
-from raptus.multilanguagefields import MultilanguageAware
-from raptus.multilanguagefields.interfaces import IMultilanguageAware
 from raptus.multilanguagefields.indexes.UnIndex import MultilanguageUnIndex
 
 LOG = getLogger('DateIndex')

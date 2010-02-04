@@ -6,16 +6,8 @@ import DateIndex
 import DateRangeIndex
 import ZCTextIndex
 
-from Products.ZCTextIndex import getIndexTypes
-
 from Products.CMFPlone.utils import safe_callable, safe_unicode
 from Products.CMFPlone.CatalogTool import registerIndexableAttribute, num_sort_regex, zero_fill
-
-_indexes =  ('KeywordIndex',
-             'FieldIndex',
-             'DateIndex',
-             'DateRangeIndex',
-            )
 
 class multilanguage_sortable_title:
     def __init__(self, obj):
@@ -44,33 +36,3 @@ class multilanguage_sortable_title_indexer(object):
     def __call__(self):
         return multilanguage_sortable_title(self.obj)
 
-def initialize(context):
-
-    for idx in _indexes:
-
-        s = "context.registerClass( \
-            %s.Multilanguage%s,\
-            permission='Add Pluggable Index', \
-            constructors=(manage_addMultilanguage%sForm,\
-                          manage_addMultilanguage%s),\
-            icon='../www/index.gif',\
-            visibility=None\
-         )" % (idx,idx,idx,idx)
-
-        exec(s)
-
-    context.registerClass(
-        ZCTextIndex.MultilanguageZCTextIndex,
-        permission = 'Add Pluggable Index',
-        constructors = (ZCTextIndex.manage_addMultilanguageZCTextIndexForm,
-                        ZCTextIndex.manage_addMultilanguageZCTextIndex,
-                        getIndexTypes),
-        icon='../www/index.gif',
-        visibility=None
-    )
-
-
-for idx in _indexes:
-
-    exec("manage_addMultilanguage%sForm = %s.manage_addMultilanguage%sForm" % (idx,idx,idx))
-    exec("manage_addMultilanguage%s     = %s.manage_addMultilanguage%s" % (idx,idx,idx))

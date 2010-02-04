@@ -8,7 +8,6 @@ from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.UnIndex import UnIndex
 from Products.PluginIndexes.KeywordIndex.KeywordIndex import KeywordIndex
 
-from raptus.multilanguagefields import MultilanguageAware
 from raptus.multilanguagefields.indexes.UnIndex import MultilanguageUnIndex
 
 class MultilanguageKeywordIndex(MultilanguageUnIndex, KeywordIndex):
