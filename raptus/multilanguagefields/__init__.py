@@ -157,8 +157,25 @@ def _getField(self, key, wrapped=False):
     """
     if key.endswith('___'):
         key = key[:key.find('___')]
+    
     return self.Schema().get(key)
+        
 BaseObject.BaseObject.getField = _getField
+
+# Patch to avoid errors when reordering fields with
+# an external schema extender (IOrderableSchemaExtender)
+old_moveField = Schema.Schema.moveField 
+def new_moveField(self, name, direction=None, pos=None, after=None, before=None):
+    if name.endswith('___'):
+        name = name[:name.find('___')]
+    old_moveField(self, name, direction, pos, after, before)
+Schema.Schema.moveField = new_moveField
+
+def __new__getitem__(self, name):
+    if name.endswith('___'):
+        name = name[:name.find('___')]
+    return self._fields[name]
+Schema.Schema.__getitem__ = __new__getitem__
 
 # ATContentTypes criteria monkey patch
 
