@@ -1,8 +1,11 @@
 from AccessControl import ClassSecurityInfo
+from Acquisition import aq_get
 
 from zope.interface import implements
 from zope.component import queryMultiAdapter
 from zope.app.component.hooks import getSite
+from zope.i18n import translate
+from zope.i18nmessageid import Message
 
 from Products.Archetypes.ClassGen import Generator, ClassGenerator
 from Products.Archetypes.utils import shasattr
@@ -115,12 +118,42 @@ class MultilanguageFieldMixin(object):
         for lang in languages:
             value[lang['name']] = self.get(instance, lang=lang['name'])
         return value
+
+    security.declarePrivate('validate_required')
+    def validate_required(self, instance, value, errors):
+        """
+        very simple multilingual validation for required fields             
+        """
+        languages = self.getAvailableLanguages(instance)
+        name = self.getName()
+        if not isinstance(value, dict):
+            lang_values = {'all' : value}
+        else :
+            lang_values = {}
+            for lang in languages :
+                if lang['name'] in value.keys() :
+                    lang_values[lang['name']]= value[lang['name']]         
+            if not len(lang_values) :
+                lang_values = {'all' : value}  
+        for key, value in lang_values.items() :    
+            if not value:
+                request = aq_get(instance, 'REQUEST')
+                label = self.widget.Label(instance)
+                if isinstance(label, Message):
+                    label = translate(label, context=request)
+                error = _(u'error_required',
+                          default=u'${name} is required, please correct.',
+                          mapping={'name': label})
+                error = translate(error, context=request)
+                errors[name] = error
+                return error
+        return None
     
 class StringField(MultilanguageFieldMixin, fields.StringField):
     _properties = fields.StringField._properties.copy()
     
 class FileField(MultilanguageFieldMixin, fields.FileField):
-    _properties = fields.FileField._properties.copy()
+    _properties = fields.FileField._properties.copy()  
     
 class TextField(MultilanguageFieldMixin, fields.TextField):
     _properties = fields.TextField._properties.copy()
