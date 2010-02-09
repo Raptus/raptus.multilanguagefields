@@ -1,6 +1,25 @@
 Changelog
 =========
 
+SVN UNRELEASE
+-------------
+
+* added "Uninstall" in uninstall profile registration for a better GenericSetup visibility in ZMI
+
+* added minimal framework for tests
+
+* added a minimal doctest (that was broken)
+
+* fix zope2 initialization (minor refactoring) to make doctests working
+
+* Added 2 Archetypes Schemata patches to avoid errors when reordering fields with
+  an external schema extender (IOrderableSchemaExtender) applied to the schema
+  with multilingual fields inside.
+
+* Added validation_required, a simple validation for required
+  multilingual fields.
+  
+
 0.6 - (2010-01-29)
 ------------------
 
