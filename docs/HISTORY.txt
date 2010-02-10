@@ -18,6 +18,14 @@ SVN UNRELEASE
 
 * Added validation_required, a simple validation for required
   multilingual fields.
+
+* Some refactoring to make code more clear :
+  - put monkey patches in patches folder
+  - put different patches in different files
+  - added Log whith patches
+  - put MultiLanguageAware in a separate file (proxy.py)
+
+* Added samples types and specific profile for unit tests
   
 
 0.6 - (2010-01-29)
