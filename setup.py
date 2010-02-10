@@ -1,7 +1,18 @@
-from setuptools import setup, find_packages
 import os
+from setuptools import setup, find_packages
 
-version = '0.6'
+def read(*rnames):
+    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+
+from xml.dom import minidom
+
+metadata_file = os.path.join(os.path.dirname(__file__),
+                             'raptus', 'multilanguagefields',
+                             'profiles', 'default', 'metadata.xml')
+                             
+metadata = minidom.parse(metadata_file)
+version = metadata.getElementsByTagName("version")[0].childNodes[0].nodeValue
+version = str(version).strip()
 
 setup(name='raptus.multilanguagefields',
       version=version,
