@@ -69,7 +69,7 @@ translator.Translator.prototype.setTranslator = function(data) {
 
 translator.Translator.prototype.translate = function() {
   value = this.getValue();
-  if(!value) return
+  if(!value) return ;
   
   jq(this.elm).find('.context').hide();
   jq(this.elm).find('.spinner').show();
@@ -109,8 +109,8 @@ translator.Translator.prototype.setTranslation = function(data) {
 }
 
 translator.Translator.prototype.getValue = function(lang) {
-  if(lang)
-    elm = jq(this.field).find('#fieldset-'+this.fieldName+'-'+lang);
+  if(lang) 
+      elm = jq(this.field).find('#fieldset-'+this.fieldName+'-'+lang);
   else
     elm = jq(this.elm);
   switch(this.widgetType) {
@@ -128,7 +128,18 @@ translator.Translator.prototype.getValue = function(lang) {
       return keywords;
       break;
     case 'rich':
-      return elm.find('.kupu-editor-iframe').contents().find("body").html();
+      if (jq('.kupu-editor-iframe', elm).length) {
+          return elm.find('.kupu-editor-iframe').contents().find("body").html();
+      }
+      else if (typeof FCKeditorAPI != 'undefined') {
+          if (lang) fieldId = this.fieldName+'___'+lang+'___';
+          else fieldId = jq('.fcklinkedField', elm).attr('id');
+          return FCKeditorAPI.GetInstance(fieldId).GetXHTML();
+      }
+      // TODO : other editor implementation
+      else if (jq('textarea', elm).length) {
+          return elm.find('textarea').val();
+      }
       break;
   }
 }
@@ -139,7 +150,7 @@ translator.Translator.prototype.setValue = function(value, lang) {
     case 'string':
       elm.find('input').val(value);
       break;
-    case 'textarea':
+    case 'textarea':    
     case 'lines':
       elm.find('textarea').val(value);
       break;
@@ -156,7 +167,18 @@ translator.Translator.prototype.setValue = function(value, lang) {
       elm.find('textarea').val(values.join("\n"));
       break;
     case 'rich':
-      elm.find('.kupu-editor-iframe').contents().find("body").html(value);
+      if (jq('.kupu-editor-iframe', elm).length) {
+          elm.find('.kupu-editor-iframe').contents().find("body").html(value);
+      }
+      else if (typeof FCKeditorAPI != 'undefined') {
+          if (lang) fieldId = this.fieldName+'___'+lang+'___';
+          else fieldId = jq('.fcklinkedField', elm).attr('id');          
+          FCKeditorAPI.GetInstance(this.fieldName+'___'+lang+'___').SetHTML(value);
+      }
+      // TODO : other editor implementation
+      else if (jq('textarea', elm).length) {
+          elm.find('textarea').val(value);
+      }
       break;
   }
 }

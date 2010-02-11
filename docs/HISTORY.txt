@@ -29,6 +29,8 @@ SVN UNRELEASE
 
 * Added doctests on multilingual fields and catalog search 
   
+* fix http://plone.org/products/raptus.multilanguagefields/issues/2
+  translate a rich widget without kupu
 
 0.6 - (2010-01-29)
 ------------------
