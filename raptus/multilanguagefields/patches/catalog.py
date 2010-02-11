@@ -2,14 +2,13 @@
 #===============================================================================
 # Patch Catalog 
 #===============================================================================
-import logging
-LOG = logging.getLogger('raptus.multilanguagefields')
 from Missing import MV
 from Record import Record
 from Products.ZCatalog import CatalogBrains
 from Products.ZCatalog.Catalog import Catalog, safe_callable
 from raptus.multilanguagefields.interfaces import IMultilanguageAware
 from raptus.multilanguagefields import MultilanguageAware
+from raptus.multilanguagefields import LOG
 
 # CatalogBrain monkey patch
 def __new_init__(self, data):
@@ -27,7 +26,7 @@ LOG.info("Products.ZCatalog.CatalogBrains.AbstractCatalogBrain.__init__ patched"
 def new_recordify(self, object):
     """ turns an object into a record tuple """
     record = []
-    # the unique id is allways the first element
+    # the unique id is always the first element
     for x in self.names:
         attr=getattr(object, x, MV)
         if(attr is not MV and safe_callable(attr)):

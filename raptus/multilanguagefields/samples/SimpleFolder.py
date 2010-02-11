@@ -1,5 +1,6 @@
 from Products.Archetypes.atapi import *
 from raptus.multilanguagefields import fields, widgets
+from raptus.multilanguagefields.config import *
 
 # a simple folder schema with a multilanguage field inside
 schema = BaseSchema + Schema((
@@ -15,7 +16,7 @@ schema = BaseSchema + Schema((
               ),
     ))
 
-class SimpleFolder(BaseFolder):
+class SimpleMultilingualFolder(BaseFolder):
     """A simple folderish archetype"""
     schema = schema
 
@@ -30,4 +31,4 @@ class SimpleFolder(BaseFolder):
         """
         self.called_afterPUT_hook = True
 
-registerType(SimpleFolder, 'raptus.multilanguagefields')
+registerType(SimpleMultilingualFolder, PROJECT_NAME)

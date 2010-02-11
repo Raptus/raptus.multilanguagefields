@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<object name="ComplexType" meta_type="Factory-based Type Information"
+<object name="ComplexMultilingualType" meta_type="Factory-based Type Information"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <property name="title">ComplexType</property>
+ <property name="title">ComplexMultilingualType</property>
  <property name="description">A simple archetype</property>
  <property name="content_icon">document_icon.gif</property>
- <property name="content_meta_type">ComplexType</property>
+ <property name="content_meta_type">ComplexMultilingualType</property>
  <property name="product">raptus.multilanguagefields</property>
- <property name="factory">addComplexType</property>
+ <property name="factory">addComplexMultilingualType</property>
  <property name="immediate_view">base_edit</property>
  <property name="global_allow">True</property>
  <property name="filter_content_types">False</property>

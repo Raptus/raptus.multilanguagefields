@@ -1,5 +1,6 @@
 from Products.Archetypes.atapi import *
 from raptus.multilanguagefields import fields, widgets
+from raptus.multilanguagefields.config import *
 
 # a simple schema with multilanguage fields
 schema = BaseSchema + Schema((
@@ -19,8 +20,8 @@ schema = BaseSchema + Schema((
     ))
 
 
-class SimpleType(BaseContent):
+class SimpleMultilingualType(BaseContent):
     """A simple archetype"""
     schema = schema
 
-registerType(SimpleType, 'raptus.multilanguagefields')
+registerType(SimpleMultilingualType, PROJECT_NAME)

@@ -2,12 +2,11 @@
 #===============================================================================
 # Patch Archetypes 
 #===============================================================================
-import logging
-LOG = logging.getLogger('raptus.multilanguagefields')
 from AccessControl import ClassSecurityInfo
 from ZODB.POSException import ConflictError
-from raptus.multilanguagefields.interfaces import IMultilanguageField
 from Products.Archetypes import BaseObject, Schema
+from raptus.multilanguagefields.interfaces import IMultilanguageField
+from raptus.multilanguagefields import LOG
 
 # BaseObject SearchableText monkey patch to support languageaware searches
 BaseObject.BaseObject.old_SearchableText = BaseObject.BaseObject.SearchableText 

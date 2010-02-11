@@ -25,7 +25,9 @@ SVN UNRELEASE
   - added Log whith patches
   - put MultiLanguageAware in a separate file (proxy.py)
 
-* Added samples types and specific profile for unit tests
+* Added samples types and specific profile for tests
+
+* Added doctests on multilingual fields and catalog search 
   
 
 0.6 - (2010-01-29)

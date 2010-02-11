@@ -1,46 +1,36 @@
 from Products.Archetypes.atapi import *
 from raptus.multilanguagefields import fields, widgets
-from SimpleType import SimpleType
+from SimpleType import SimpleMultilingualType
+from raptus.multilanguagefields.config import *
 
-fields = ['StringField',
-          'FileField', 'TextField', 'DateTimeField', 'LinesField',
-          'IntegerField', 'FloatField', 'FixedPointField',
-          'BooleanField', 'ImageField'
-          ]
-
-field_instances = []
-
-for f in fields:
-    field_instances.append(getattr(fields, f)(f.lower()))
-
-schema = Schema(tuple(field_instances) + (
-    LinesField('selectionlinesfield1',
+schema = Schema((
+    fields.LinesField('selectionlinesfield1',
                vocabulary='_get_selection_vocab',
                enforceVocabulary=1,
                widget=widgets.SelectionWidget(label='Selection'),
                ),
-    LinesField('selectionlinesfield2',
+    fields.LinesField('selectionlinesfield2',
                vocabulary='_get_selection_vocab',
                widget=widgets.SelectionWidget(label='Selection'),
                ),
-    LinesField('selectionlinesfield3',
+    fields.LinesField('selectionlinesfield3',
                vocabulary='_get_selection_vocab2',
                widget=widgets.MultiSelectionWidget(label='MultiSelection'),
                ),
-    TextField('textarea_appendonly',
+    fields.TextField('textarea_appendonly',
               widget=widgets.TextAreaWidget( label='TextArea',
                                      append_only=1,),
               ),
-    TextField('textarea_appendonly_timestamp',
+    fields.TextField('textarea_appendonly_timestamp',
               widget=widgets.TextAreaWidget( label='TextArea',
                                      append_only=1,
                                      timestamp=1,),
               ),                                          
-    TextField('textarea_maxlength',
+    fields.TextField('textarea_maxlength',
               widget=widgets.TextAreaWidget( label='TextArea',
                                      maxlength=20,),
               ),                                          
-    TextField('richtextfield',
+    fields.TextField('richtextfield',
               allowable_content_types=('text/plain',
                                        'text/structured',
                                        'text/restructured',
@@ -48,7 +38,7 @@ schema = Schema(tuple(field_instances) + (
                                        'application/msword'),
               widget=widgets.RichWidget(label='rich'),
               ),
-    ReferenceField('referencefield',
+    fields.ReferenceField('referencefield',
                    relationship='complextype',
                    widget=widgets.ReferenceWidget(addable=1),
                    allowed_types=('ComplexType', ),
@@ -56,11 +46,9 @@ schema = Schema(tuple(field_instances) + (
                   ),
     )) + ExtensibleMetadata.schema
 
-class ComplexType(SimpleType):
+class ComplexMultilingualType(SimpleMultilingualType):
     """A simple archetype"""
-    schema = SimpleType.schema + schema
-    archetype_name = meta_type = "ComplexType"
-    portal_type = 'ComplexType'
+    schema = SimpleMultilingualType.schema + schema
 
     def _get_selection_vocab(self):
         return DisplayList((('Test','Test'), ))
@@ -69,4 +57,4 @@ class ComplexType(SimpleType):
         return DisplayList((('Test','Test'),('Test2','Test2'), ))
 
 
-registerType(ComplexType, 'raptus.multilanguagefields')
+registerType(ComplexMultilingualType, PROJECT_NAME)
