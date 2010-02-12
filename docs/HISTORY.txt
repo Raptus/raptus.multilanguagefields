@@ -4,6 +4,12 @@ Changelog
 SVN UNRELEASE
 -------------
 
+* cleaned up and added patches necessary when using primary fields with archetypes schemaextender (patches/archetypes.py)
+
+* removed unused variable (widgets.py)
+
+* Added license information
+
 * added "Uninstall" in uninstall profile registration for a better GenericSetup visibility in ZMI
 
 * added minimal framework for tests
