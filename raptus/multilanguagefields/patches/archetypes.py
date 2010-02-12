@@ -5,12 +5,14 @@
 from AccessControl import ClassSecurityInfo
 from ZODB.POSException import ConflictError
 from Products.Archetypes import BaseObject, Schema
+from Products.Archetypes.Storage import annotation
+from Products.Archetypes.utils import shasattr
 from raptus.multilanguagefields.interfaces import IMultilanguageField
 from raptus.multilanguagefields import LOG
 
 # BaseObject SearchableText monkey patch to support languageaware searches
-BaseObject.BaseObject.old_SearchableText = BaseObject.BaseObject.SearchableText 
-def new_SearchableText(self, lang=None):
+BaseObject.BaseObject.__old_SearchableText = BaseObject.BaseObject.SearchableText 
+def __new_SearchableText(self, lang=None):
     """All fields marked as 'searchable' are concatenated together
     here for indexing purpose.
     """
@@ -59,60 +61,91 @@ def new_SearchableText(self, lang=None):
             
     data = ' '.join(data)
     return data
-BaseObject.BaseObject.SearchableText = new_SearchableText
+BaseObject.BaseObject.SearchableText = __new_SearchableText
 LOG.info("Products.Archetypes.BaseObject.BaseObject.SearchableText patched") 
 
 # getField patch to return the field object
 # when key is fieldname____lang___
-BaseObject.BaseObject.old_getField = BaseObject.BaseObject.getField   
-def new_getField(self, key, wrapped=False):
+BaseObject.BaseObject.__old_getField = BaseObject.BaseObject.getField   
+def __new_getField(self, key, wrapped=False):
     """Returns a field object.
     """
     if key.endswith('___'):
         key = key[:key.find('___')]
-    
-    return self.Schema().get(key)
-     
-BaseObject.BaseObject.getField = new_getField
+    return self.__old_getField(key, wrapped)
+BaseObject.BaseObject.getField = __new_getField
 LOG.info("Products.Archetypes.BaseObject.BaseObject.getField patched") 
 
 # Patch to get the good field when moving fields
-old_moveField = Schema.Schema.moveField 
-def new_moveField(self, name, direction=None, pos=None, after=None, before=None):
+Schema.Schema.__old_moveField = Schema.Schema.moveField 
+def __new_moveField(self, name, direction=None, pos=None, after=None, before=None):
     if name.endswith('___'):
         name = name[:name.find('___')]
-    old_moveField(self, name, direction, pos, after, before)
-Schema.Schema.moveField = new_moveField
+    self.__old_moveField(name, direction, pos, after, before)
+Schema.Schema.moveField = __new_moveField
 LOG.info("Products.Archetypes.Schema.Schema.moveField patched") 
 
 # patch for Schema.__getitem__ with the good key
 # this method is used by schemaextender
-Schema.Schema.__old_getitem__ = Schema.Schema.__getitem__ 
-def __new__getitem__(self, name):
+Schema.Schema.__old___getitem__ = Schema.Schema.__getitem__ 
+def __new___getitem__(self, name):
     if name.endswith('___'):
         name = name[:name.find('___')]
-    return self._fields[name]
-Schema.Schema.__getitem__ = __new__getitem__
-LOG.info("Products.Archetypes.Schema.Schema.__getitem__  patched") 
+    return self.__old___getitem__(name)
+Schema.Schema.__getitem__ = __new___getitem__
+LOG.info("Products.Archetypes.Schema.Schema.__getitem__ patched") 
 
 # Archetypes Schemata monkey patch to use the good field names
-Schema.Schemata._old__checkPropertyDupe = Schema.Schemata._checkPropertyDupe
-def _new_checkPropertyDupe(self, field, propname):
-    check_value = getattr(field, propname, Schema._marker)
-    # None is fine too.
-    if check_value is Schema._marker or check_value is None:
-        return False
-    check_name = field.getName()
-    if IMultilanguageField.providedBy(field) and \
-       check_name.endswith('___'):
-        check_name = check_name[:check_name.find('___')]
-    for f in self.fields():
-        got = getattr(f, propname, Schema._marker)
-        if got == check_value and f.getName() != check_name:
-            return f, got
-    return False
-Schema.Schemata._checkPropertyDupe = _new_checkPropertyDupe
-LOG.info("Products.Archetypes.Schema.Schemata._checkPropertyDupe  patched") 
+Schema.Schemata.__old_addField = Schema.Schemata.addField
+def __new_addField(self, field):
+    lang = None
+    if IMultilanguageField.providedBy(field):
+        lang = field._v_lang
+        field.resetLanguage()
+    self.__old_addField(field)
+    if lang is not None:
+        field.setLanguage(lang)
+Schema.Schemata.addField = __new_addField
+LOG.info("Products.Archetypes.Schema.Schemata.addField patched") 
+
+# Archetypes Schemata monkey patch to use the good field names
+Schema.Schemata.__old__validateOnAdd = Schema.Schemata._validateOnAdd
+def __new__validateOnAdd(self, field):
+    """Validates fields on adding and bootstrapping
+    """
+    lang = None
+    if IMultilanguageField.providedBy(field):
+        lang = field._v_lang
+        field.resetLanguage()
+    try:
+        self.__old__validateOnAdd(field)
+    finally:
+        if lang is not None:
+            field.setLanguage(lang)
+Schema.Schemata._validateOnAdd = __new__validateOnAdd
+LOG.info("Products.Archetypes.Schema.Schemata._validateOnAdd patched") 
+
+# Archetypes Schemata monkey patch to use the good field names
+Schema.Schemata.__old__checkPropertyDupe = Schema.Schemata._checkPropertyDupe
+def __new__checkPropertyDupe(self, field, propname):
+    lang = None
+    if IMultilanguageField.providedBy(field):
+        lang = field._v_lang
+        field.resetLanguage()
+    r = self.__old__checkPropertyDupe(field, propname)
+    if lang is not None:
+        field.setLanguage(lang)
+    return r
+Schema.Schemata._checkPropertyDupe = __new__checkPropertyDupe
+LOG.info("Products.Archetypes.Schema.Schemata._checkPropertyDupe patched") 
+
+# Archetypes AnnotationStorage monkey patch
+annotation.AnnotationStorage.__old__cleanup = annotation.AnnotationStorage._cleanup
+def __new__cleanup(self, name, instance, value, **kwargs):
+    if shasattr(instance, name) and not callable(getattr(instance, name)):
+        delattr(instance, name)
+annotation.AnnotationStorage._cleanup = __new__cleanup
+LOG.info("Products.Archetypes.Storage.annotation.AnnotationStorage._cleanup patched") 
 
 # ATContentTypes criteria monkey patch
 # something todo here ?
