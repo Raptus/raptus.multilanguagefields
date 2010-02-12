@@ -15,7 +15,6 @@ class MultilanguageWidgetMixin(object):
         """
         values = {}
         kwargs = {}
-        name = field.getName()
         languages = field.getAvailableLanguages(instance)
         for lang in languages:
             field.setLanguage(lang['name'])
