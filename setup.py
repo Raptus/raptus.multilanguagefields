@@ -23,6 +23,7 @@ setup(name='raptus.multilanguagefields',
       classifiers=[
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
+        "License :: OSI Approved :: GNU General Public License (GPL)",
         ],
       keywords='plone archetypes widgets fields',
       author='Raptus AG',
