@@ -5,7 +5,7 @@ from Products.Archetypes.Registry import registerWidget
 
 from Products.ATReferenceBrowserWidget.ATReferenceBrowserWidget import ReferenceBrowserWidget as BaseReferenceBrowserWidget
 
-class MultilanguageWidgetMixin(object):
+class MultilanguageWidgetMixin(widgets.TypesWidget):
     security = ClassSecurityInfo()
 
     security.declarePublic('process_form')

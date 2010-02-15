@@ -38,6 +38,11 @@ SVN UNRELEASE
 * fix http://plone.org/products/raptus.multilanguagefields/issues/2
   translate a rich widget without kupu
 
+* The MultilanguageFieldMixin must inherit from Products.Archetypes.Field.ObjectField
+  and MultilanguageWidgetMixin from Products.Archetypes.Widget.TypesWidget
+  The Super Class of fields/widgets must be a field/widget
+  to avoid problems with some low level methods.
+
 0.6 - (2010-01-29)
 ------------------
 

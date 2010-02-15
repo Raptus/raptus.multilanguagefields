@@ -20,7 +20,7 @@ from Products.CMFPlone import PloneMessageFactory as _
 from raptus.multilanguagefields import MultilanguageAware
 from raptus.multilanguagefields.interfaces import IMultilanguageField
 
-class MultilanguageFieldMixin(object):
+class MultilanguageFieldMixin(fields.ObjectField):
     implements(IMultilanguageField)
     
     security = ClassSecurityInfo()
