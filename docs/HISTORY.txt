@@ -1,6 +1,11 @@
 Changelog
 =========
 
+SVN UNRELEASED
+--------------
+
+* reverted change @110991
+
 0.7 (2010-02-16)
 ----------------
 
