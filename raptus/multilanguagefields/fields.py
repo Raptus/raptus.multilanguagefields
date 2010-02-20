@@ -1,3 +1,4 @@
+from ExtensionClass import Base
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_get
 
@@ -16,11 +17,12 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import View, ModifyPortalContent
 
 from Products.CMFPlone import PloneMessageFactory as _
+from Products.Archetypes.Layer import DefaultLayerContainer
 
 from raptus.multilanguagefields import MultilanguageAware
 from raptus.multilanguagefields.interfaces import IMultilanguageField
 
-class MultilanguageFieldMixin(object):
+class MultilanguageFieldMixin(Base):
     implements(IMultilanguageField)
     
     security = ClassSecurityInfo()
@@ -69,8 +71,16 @@ class MultilanguageFieldMixin(object):
 
     security.declarePrivate('set')
     def set(self, instance, value, **kwargs):
-        if not isinstance(value, dict):
+        """
+        set all lang values
+        if value is not a dict, set the value for the current language
+        """
+        current_lang = self._getCurrentLanguage(instance)
+        if not value :
             return
+        if value and not isinstance(value, dict):
+            neutralValue = value
+            value = {current_lang: neutralValue} 
         for lang, val in value.items():
             self.setLanguage(lang)
             kw = kwargs.copy()
@@ -148,6 +158,15 @@ class MultilanguageFieldMixin(object):
                 errors[name] = error
                 return error
         return None
+
+
+    def __repr__(self):
+        """
+        Return a string representation consisting of name of the  class, 
+        type and permissions.
+        """
+        name = self.__name__
+        return "<Field %s(%s:%s)>" % (name, self.type, self.mode)
     
 class StringField(MultilanguageFieldMixin, fields.StringField):
     _properties = fields.StringField._properties.copy()

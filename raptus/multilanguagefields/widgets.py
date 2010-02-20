@@ -1,3 +1,4 @@
+from ExtensionClass import Base
 from AccessControl import ClassSecurityInfo
 
 from Products.Archetypes import Widget as widgets
@@ -5,7 +6,7 @@ from Products.Archetypes.Registry import registerWidget
 
 from Products.ATReferenceBrowserWidget.ATReferenceBrowserWidget import ReferenceBrowserWidget as BaseReferenceBrowserWidget
 
-class MultilanguageWidgetMixin(object):
+class MultilanguageWidgetMixin(Base):
     security = ClassSecurityInfo()
 
     security.declarePublic('process_form')
