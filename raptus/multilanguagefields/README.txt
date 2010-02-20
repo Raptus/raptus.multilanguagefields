@@ -36,18 +36,21 @@ Create a SimpleMultilingualType
     'sample1'
     >>> sample1 = self.portal.sample1
 
-The field 'body' is multilingual
-    >>> sample1.edit(body={'fr': '<p>FRENCH CONTENT</p>', 'en': '<p>ENGLISH CONTENT</p>'})
+'title' and 'body' are multilingual fields
+    >>> sample1.edit(title={'fr': 'FRENCH TITLE', 'en': 'ENGLISH TITLE'},
+    ...              body={'fr': '<p>FRENCH CONTENT</p>', 'en': '<p>ENGLISH CONTENT</p>'})
 
-Test the getAll method on field which render all lang values in a dict
+Test the getAll method on body field which render all lang values in a dict
     >>> schema = sample1.Schema()
     >>> field = schema['body']
     >>> field.getAll(sample1)
     {'fr': '<p>FRENCH CONTENT</p>', 'en': '<p>ENGLISH CONTENT</p>'}
 
-Test the accessor, which render only the current user language content
+Test the accessors, which render only the current user language content
     >>> sample1.getBody()
     '<p>FRENCH CONTENT</p>'
+    >>> sample1.Title()
+    'FRENCH TITLE'
 
 
 Test catalog
@@ -100,3 +103,66 @@ so we must get a response
     1
     >>> results[0].getId
     'sample1'
+
+Test some Archetypes standard methods on schemas
+------------------------------------------------
+
+Copy a Schema
+    >>> from raptus.multilanguagefields.samples.SimpleType import schema as simpleSchema
+    >>> newSchema = simpleSchema.copy()
+    >>> 'body' in newSchema.keys()
+    True
+
+Create a new class using this schema
+    >>> from raptus.multilanguagefields.samples.SimpleType import SimpleMultilingualType
+    >>> from Products.Archetypes.atapi import *
+    >>> class NewType(SimpleMultilingualType) :
+    ...     schema = newSchema
+    >>> registerType(NewType, 'raptus.multilanguagefields')
+    >>> toto = NewType('toto')
+
+
+Test Fields and Widgets at low level
+------------------------------------
+
+    >>> from raptus.multilanguagefields import fields, widgets
+    >>> MultiLangRichWidget = widgets.RichWidget
+    >>> MultiLangTextField = fields.TextField
+
+We got this error when trying to serialize objects with multilanguage
+widgets inside.
+"ExtensionClass.Base.__new__(RichWidget) is not safe, use object.__new__()"
+This is fixed when MultilanguageWidgetMixin inherit from ExtensionClass.Base
+    >>> from ExtensionClass import Base
+    >>> Base.__new__(MultiLangRichWidget)
+    <raptus.multilanguagefields.widgets.RichWidget object at ...
+
+Same error with fields :
+"ExtensionClass.Base.__new__(TextField) is not safe, use object.__new__()"
+This is fixed when MultilanguageFieldMixin inherit from ExtensionClass.Base
+    >>> from Products.Archetypes.Layer import DefaultLayerContainer
+    >>> NewFieldObject = DefaultLayerContainer.__new__(MultiLangTextField)
+    >>> NewFieldObject.__name__ = 'test'
+    >>> NewFieldObject.type = 'MultiLangTextField'
+    >>> NewFieldObject.mode = 'rw'
+    >>> NewFieldObject
+    <Field test(MultiLangTextField:rw)>    
+
+
+Test standard rename method used in plone rename forms
+------------------------------------------------------
+Plone rename forms pass string as argument for title to rename the objects
+We do not want to overload rename forms, but just 
+get the good title in current language when using these
+forms when title is a multilanguage field
+
+Try to change sample1 title using the method used by folder_rename script
+(putils.renameObjectsByPaths)
+We must get a new french title (current language)
+    >>> putils = self.portal.plone_utils
+    >>> path1 = '/'.join(sample1.getPhysicalPath())
+    >>> newTitleFr = 'NEW FRENCH TITLE'
+    >>> putils.renameObjectsByPaths(paths=[path1],new_ids=['sample1'],new_titles=[newTitleFr])
+    ({'/plone/sample1': ('sample1', 'NEW FRENCH TITLE')}, {})
+    >>> sample1.Title()
+    'NEW FRENCH TITLE'
