@@ -4,6 +4,12 @@ from raptus.multilanguagefields.config import *
 
 # a simple schema with multilanguage fields
 schema = BaseSchema + Schema((
+    fields.StringField('title',
+              required=1,
+              searchable=1,
+              accessor = 'Title',
+              widget  = widgets.StringWidget(description="""Enter the title of the document"""),
+              ),
     fields.TextField('body',
               required=1,
               searchable=1,

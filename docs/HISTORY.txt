@@ -1,10 +1,28 @@
 Changelog
 =========
 
-SVN UNRELEASED
---------------
+0.8 (2010-02-23)
+----------------
 
 * reverted change @110991
+
+* new doctests added without errors :
+
+  - multilanguage text field 'title' added in SampleType
+  - copy of schemas with multilanguage fields inside
+
+* new doctests added with errors :
+
+  - standard plone rename forms do not work
+  - object serialization with multilanguage fields inside
+    do not work (ExtensionClass error)
+
+* fix the two previous errors :
+
+  - the set method in MultiLanguageFieldMixin set the value
+    for the current language when value is not a dict (fix rename forms)
+  - the MultiLanguageFieldMixin class must inherit from ExtensionClass.Base
+  - the MultiLanguageWidgetMixin class must inherit from ExtensionClass.Base
 
 0.7 (2010-02-16)
 ----------------
@@ -22,10 +40,12 @@ SVN UNRELEASED
 * Added validation_required, a simple validation for required
   multilingual fields.
 * Some refactoring to make code more clear :
+
   - put monkey patches in patches folder
   - put different patches in different files
   - added Log whith patches
   - put MultiLanguageAware in a separate file (proxy.py)
+
 * Added samples types and specific profile for tests
 * Added doctests on multilingual fields and catalog search 
 * fix http://plone.org/products/raptus.multilanguagefields/issues/2
@@ -68,4 +88,3 @@ SVN UNRELEASED
 ------------------
 
 * Initial release
-
