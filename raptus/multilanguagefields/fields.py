@@ -33,6 +33,16 @@ class MultilanguageFieldMixin(Base):
             return getToolByName(context, 'portal_languages').getPreferredLanguage()
         except AttributeError:
             return 'en';
+        
+    def getDefaultLang(self, context):
+        try:
+            portal_languages = getToolByName(context, 'portal_languages')
+        except:
+            return None
+        if portal_languages.allow_content_language_fallback:
+            return portal_languages.getDefaultLanguage()
+        else:
+            return None
 
     security.declarePublic('getName')
     def getName(self):
@@ -103,6 +113,11 @@ class MultilanguageFieldMixin(Base):
                 return self.getAll(instance, **kwargs)
             self.setLanguage(kwargs['lang'])
             value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
+            if not value:
+                defaultLang = self.getDefaultLang(instance)
+                if defaultLang:
+                    self.setLanguage(defaultLang)
+                    value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
             self.resetLanguage()
         else:
             value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
@@ -116,6 +131,11 @@ class MultilanguageFieldMixin(Base):
                 kwargs['lang'] = self._getCurrentLanguage(instance)
             self.setLanguage(kwargs['lang'])
             value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
+            if not value:
+                defaultLang = self.getDefaultLang(instance)
+                if defaultLang:
+                    self.setLanguage(defaultLang)
+                    value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
             self.resetLanguage()
         else:
             value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
@@ -135,6 +155,7 @@ class MultilanguageFieldMixin(Base):
         very simple multilingual validation for required fields             
         """
         languages = self.getAvailableLanguages(instance)
+        defaultLang = self.getDefaultLang(instance)
         name = self.getName()
         if not isinstance(value, dict):
             lang_values = {'all' : value}
@@ -144,8 +165,10 @@ class MultilanguageFieldMixin(Base):
                 if lang['name'] in value.keys() :
                     lang_values[lang['name']]= value[lang['name']]         
             if not len(lang_values) :
-                lang_values = {'all' : value}  
-        for key, value in lang_values.items() :    
+                lang_values = {'all' : value}
+        if defaultLang and lang_values.get(defaultLang, 0):
+            return None
+        for key, value in lang_values.items():    
             if not value:
                 request = aq_get(instance, 'REQUEST')
                 label = self.widget.Label(instance)
@@ -158,7 +181,6 @@ class MultilanguageFieldMixin(Base):
                 errors[name] = error
                 return error
         return None
-
 
     def __repr__(self):
         """
@@ -229,6 +251,11 @@ class ImageField(MultilanguageFieldMixin, fields.ImageField):
             kwargs['lang'] = self._getCurrentLanguage(instance)
         self.setLanguage(kwargs['lang'])
         image = super(ImageField, self).getScale(instance, scale, **kwargs)
+        if not image:
+            defaultLang = self.getDefaultLang(instance)
+            if defaultLang:
+                self.setLanguage(defaultLang)
+                image = super(MultilanguageFieldMixin, self).getScale(instance, scale, **kwargs)
         self.resetLanguage()
         return image
     
@@ -250,6 +277,12 @@ class ImageField(MultilanguageFieldMixin, fields.ImageField):
         if not kwargs.has_key('lang'):
             kwargs['lang'] = self._getCurrentLanguage(instance)
         self.setLanguage(kwargs['lang'])
+        value = self.get(instance, **kwargs)
+        if not value or not value.get_size():
+            defaultLang = self.getDefaultLang(instance)
+            if defaultLang:
+                kwargs['lang'] = defaultLang
+                self.setLanguage(kwargs['lang'])
         tag = super(ImageField, self).tag(instance, scale, height, width, alt, css_class, title, **kwargs)
         self.resetLanguage()
         return tag
