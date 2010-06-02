@@ -1,4 +1,4 @@
-from Globals import DTMLFile
+from App.special_dtml import DTMLFile
 
 from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex, manage_addFieldIndexForm
 

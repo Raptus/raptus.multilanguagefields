@@ -1,16 +1,16 @@
 from persistent.dict import PersistentDict
 
 from AccessControl import ClassSecurityInfo
+from AccessControl.Permissions import manage_zcatalog_indexes
 from BTrees.IIBTree import IITreeSet
 from BTrees.IOBTree import IOBTree
 import BTrees.Length
-from Globals import DTMLFile, InitializeClass
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
 
 from Products.PluginIndexes.common import safe_callable
 
-from Products.PluginIndexes.DateRangeIndex.DateRangeIndex import DateRangeIndex, \
-                                                                 VIEW_PERMISSION, \
-                                                                 INDEX_MGMT_PERMISSION
+from Products.PluginIndexes.DateRangeIndex.DateRangeIndex import DateRangeIndex
 from raptus.multilanguagefields.indexes.UnIndex import MultilanguageUnIndex
 
 class MultilanguageDateRangeIndex(MultilanguageUnIndex, DateRangeIndex):
@@ -158,7 +158,7 @@ class MultilanguageDateRangeIndex(MultilanguageUnIndex, DateRangeIndex):
                       fset=_set_until,
                       fdel=_del_until)
 
-    security.declareProtected(INDEX_MGMT_PERMISSION, 'clear')
+    security.declareProtected(manage_zcatalog_indexes, 'clear')
     def clear( self ):
         self._d_always        = PersistentDict()
         self._d_since_only    = PersistentDict()

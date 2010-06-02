@@ -31,10 +31,6 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
       />
 
-  <utility 
-      component=".multilanguagefieldsdomain"
-      name="raptus.multilanguagefields" />
-
   <!-- File System Directory Views registration -->
   <cmf:registerDirectory
       name="multilanguagefields"

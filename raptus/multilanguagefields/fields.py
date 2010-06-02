@@ -287,6 +287,18 @@ class ImageField(MultilanguageFieldMixin, fields.ImageField):
         self.resetLanguage()
         return tag
     
+try:
+    # FIXME: The multilanguage blob field does not yet work
+    from plone.app.blob.field import BlobField as BaseBlobField
+    class BlobField(MultilanguageFieldMixin, BaseBlobField):
+        _properties = BaseBlobField._properties.copy()
+
+    registerField(BlobField,
+                  title='Multilanguage Blob',
+                  description='Used for storing files in blobs')
+except:
+    pass
+    
 registerField(StringField,
               title='Multilanguage String',
               description='Used for storing simple strings')

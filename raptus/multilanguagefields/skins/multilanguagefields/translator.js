@@ -95,7 +95,7 @@ translator.Translator.prototype.translate = function() {
 }
 
 translator.Translator.prototype.setTranslation = function(data) {
-  language = jq(this.field).find('#fieldsetlegend-'+this.fieldName+'-'+data.dest+' span').text();
+  language = jq(this.field).find('a[href=#fieldsetlegend-'+this.fieldName+'-'+data.dest+'] span').text();
   translation = data.result.responseData.translatedText.split("[[N]]");
   for(var i=0; i<translation.length; i++)
     translation[i] = jq.trim(translation[i]);
@@ -129,16 +129,21 @@ translator.Translator.prototype.getValue = function(lang) {
       break;
     case 'rich':
       if (jq('.kupu-editor-iframe', elm).length) {
-          return elm.find('.kupu-editor-iframe').contents().find("body").html();
+        return elm.find('.kupu-editor-iframe').contents().find("body").html();
       }
       else if (typeof FCKeditorAPI != 'undefined') {
-          if (lang) fieldId = this.fieldName+'___'+lang+'___';
-          else fieldId = jq('.fcklinkedField', elm).attr('id');
-          return FCKeditorAPI.GetInstance(fieldId).GetXHTML();
+        if (lang) fieldId = this.fieldName+'___'+lang+'___';
+        else fieldId = jq('.fcklinkedField', elm).attr('id');
+        return FCKeditorAPI.GetInstance(fieldId).GetXHTML();
       }
+	  else if (typeof tinyMCE != 'undefined') {
+	  	if (!lang) lang = this.lang;
+	  	fieldId = this.fieldName+'___'+lang+'___';
+		return tinyMCE.get(fieldId).getContent();
+	  }
       // TODO : other editor implementation
       else if (jq('textarea', elm).length) {
-          return elm.find('textarea').val();
+        return elm.find('textarea').val();
       }
       break;
   }
@@ -168,16 +173,21 @@ translator.Translator.prototype.setValue = function(value, lang) {
       break;
     case 'rich':
       if (jq('.kupu-editor-iframe', elm).length) {
-          elm.find('.kupu-editor-iframe').contents().find("body").html(value);
+        elm.find('.kupu-editor-iframe').contents().find("body").html(value);
       }
       else if (typeof FCKeditorAPI != 'undefined') {
-          if (lang) fieldId = this.fieldName+'___'+lang+'___';
-          else fieldId = jq('.fcklinkedField', elm).attr('id');          
-          FCKeditorAPI.GetInstance(this.fieldName+'___'+lang+'___').SetHTML(value);
+        if (lang) fieldId = this.fieldName+'___'+lang+'___';
+        else fieldId = jq('.fcklinkedField', elm).attr('id');          
+        FCKeditorAPI.GetInstance(this.fieldName+'___'+lang+'___').SetHTML(value);
       }
+	  else if (typeof tinyMCE != 'undefined') {
+	  	if (!lang) lang = this.lang;
+	  	fieldId = this.fieldName+'___'+lang+'___';
+		return tinyMCE.get(fieldId).setContent(value);
+	  }
       // TODO : other editor implementation
       else if (jq('textarea', elm).length) {
-          elm.find('textarea').val(value);
+        elm.find('textarea').val(value);
       }
       break;
   }

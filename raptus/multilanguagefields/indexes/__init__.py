@@ -7,7 +7,7 @@ import DateRangeIndex
 import ZCTextIndex
 
 from Products.CMFPlone.utils import safe_callable, safe_unicode
-from Products.CMFPlone.CatalogTool import registerIndexableAttribute, num_sort_regex, zero_fill
+from Products.CMFPlone.CatalogTool import num_sort_regex, zero_fill
 
 class multilanguage_sortable_title:
     def __init__(self, obj):

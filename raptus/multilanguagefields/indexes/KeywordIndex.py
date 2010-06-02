@@ -2,7 +2,7 @@ from types import StringType, UnicodeType
 from logging import getLogger
 
 from BTrees.OOBTree import OOSet
-from Globals import DTMLFile
+from App.special_dtml import DTMLFile
 
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.UnIndex import UnIndex

@@ -3,7 +3,7 @@ from logging import getLogger
 from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
 from ZODB.POSException import ConflictError
-from Globals import DTMLFile
+from App.special_dtml import DTMLFile
 
 from Products.PluginIndexes.common import safe_callable
 

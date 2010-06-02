@@ -1,8 +1,8 @@
 from Acquisition import aq_base
-from Globals import DTMLFile, InitializeClass
+from App.class_init import InitializeClass
+from App.special_dtml import DTMLFile
 
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
-from Products.ZCTextIndex.ILexicon import ILexicon as z2ILexicon
 from Products.ZCTextIndex.interfaces import ILexicon
 
 from zope.app.component.hooks import getSite
@@ -65,8 +65,7 @@ class MultilanguageZCTextIndex(ZCTextIndex):
             return ZCTextIndex.getLexicon(self)
         except:
             lexicon = getattr(getToolByName(getSite(), 'portal_catalog'), self.lexicon_id)
-            if not (ILexicon.providedBy(lexicon) or
-                    z2ILexicon.isImplementedBy(lexicon)):
+            if not ILexicon.providedBy(lexicon):
                 raise TypeError('Object "%s" is not a ZCTextIndex Lexicon'
                                 % repr(lexicon))
             self._v_lexicon = lexicon

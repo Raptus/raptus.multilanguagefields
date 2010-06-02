@@ -93,7 +93,22 @@ def __new___getitem__(self, name):
         name = name[:name.find('___')]
     return self.__old___getitem__(name)
 Schema.Schema.__getitem__ = __new___getitem__
-LOG.info("Products.Archetypes.Schema.Schema.__getitem__ patched") 
+LOG.info("Products.Archetypes.Schema.Schema.__getitem__ patched")
+
+# patch for Schema.__setitem__ with the good key
+# this method is used by schemaextender
+Schema.Schema.__old___setitem__ = Schema.Schema.__setitem__
+def __new___setitem__(self, name, field):
+    lang = None
+    if IMultilanguageField.providedBy(field):
+        lang = field._v_lang
+        field.resetLanguage()
+    assert name == field.getName()
+    self.addField(field)
+    if lang is not None:
+        field.setLanguage(lang)
+Schema.Schema.__setitem__ = __new___setitem__
+LOG.info("Products.Archetypes.Schema.Schema.__setitem__ patched")
 
 # Archetypes Schemata monkey patch to use the good field names
 Schema.Schemata.__old_addField = Schema.Schemata.addField

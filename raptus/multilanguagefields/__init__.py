@@ -7,8 +7,6 @@ LOG = logging.getLogger(config.PROJECT_NAME)
 
 from zope.i18nmessageid import MessageFactory
 multilanguagefieldsMessageFactory = MessageFactory(config.I18N_DOMAIN)
-from Products.PlacelessTranslationService.utility import PTSTranslationDomain
-multilanguagefieldsdomain = PTSTranslationDomain(config.I18N_DOMAIN)
 
 from indexes import FieldIndex, \
                     KeywordIndex, \
