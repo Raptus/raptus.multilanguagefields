@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<object name="portal_catalog" meta_type="Plone Catalog Tool">
+ <index name="Description" remove="true" />
+ <index name="SearchableText" remove="true"/>
+ <index name="Subject" remove="true" />
+ <index name="Title" remove="true" />
+ <index name="sortable_title" remove="true" />
+ <index name="Description" meta_type="MultilanguageZCTextIndex">
+  <indexed_attr value="Description"/>
+  <extra name="index_type" value="Okapi BM25 Rank"/>
+  <extra name="lexicon_id" value="plone_lexicon"/>
+ </index>
+ <index name="SearchableText" meta_type="MultilanguageZCTextIndex">
+  <indexed_attr value="SearchableText"/>
+  <extra name="index_type" value="Okapi BM25 Rank"/>
+  <extra name="lexicon_id" value="plone_lexicon"/>
+ </index>
+ <index name="Subject" meta_type="MultilanguageKeywordIndex">
+  <indexed_attr value="Subject"/>
+ </index>
+ <index name="Title" meta_type="MultilanguageZCTextIndex">
+  <indexed_attr value="Title"/>
+  <extra name="index_type" value="Okapi BM25 Rank"/>
+  <extra name="lexicon_id" value="plone_lexicon"/>
+ </index>
+ <index name="sortable_title" meta_type="MultilanguageFieldIndex">
+  <indexed_attr value="multilanguage_sortable_title"/>
+ </index>
+</object>
