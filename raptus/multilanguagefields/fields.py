@@ -148,39 +148,20 @@ class MultilanguageFieldMixin(Base):
         for lang in languages:
             value[lang['name']] = self.get(instance, lang=lang['name'])
         return value
-
+    
     security.declarePrivate('validate_required')
-    def validate_required(self, instance, value, errors):
+    def validate(self, value, instance, errors=None, **kwargs):
+        """ multilingual validation respecting language fallback
         """
-        very simple multilingual validation for required fields             
-        """
-        languages = self.getAvailableLanguages(instance)
         defaultLang = self.getDefaultLang(instance)
-        name = self.getName()
         if not isinstance(value, dict):
-            lang_values = {'all' : value}
-        else :
-            lang_values = {}
-            for lang in languages :
-                if lang['name'] in value.keys() :
-                    lang_values[lang['name']]= value[lang['name']]         
-            if not len(lang_values) :
-                lang_values = {'all' : value}
-        if defaultLang and lang_values.get(defaultLang, 0):
-            return None
-        for key, value in lang_values.items():    
-            if not value:
-                request = aq_get(instance, 'REQUEST')
-                label = self.widget.Label(instance)
-                if isinstance(label, Message):
-                    label = translate(label, context=request)
-                error = _(u'error_required',
-                          default=u'${name} is required, please correct.',
-                          mapping={'name': label})
-                error = translate(error, context=request)
-                errors[name] = error
-                return error
-        return None
+            return super(MultilanguageFieldMixin, self).validate(value, instance, errors, **kwargs)
+        else:
+            for lang, val in value.items():
+                val = val or value.get(defaultLang, 0)
+                res = super(MultilanguageFieldMixin, self).validate(val, instance, errors, **kwargs)
+                if res is not None:
+                    return res
 
     def __repr__(self):
         """
