@@ -5,3 +5,37 @@
 .inlineForm .enableFormTabbing:load {
   action-client: formTabbing;
 }
+
+.languageMultiplier input.blurrable:blur {
+    action-cancel:                               kssValidateField;
+    action-server:                               kssValidateMultilanguageField;
+    kssValidateMultilanguageField-fieldname:     kssAttr('atfieldname', true);
+    kssValidateMultilanguageField-kssSubmitForm: currentForm();
+    kssValidateMultilanguageField-uid:           kssAttr('atuid', true);
+}
+.languageMultiplier select.blurrable:blur {
+    action-cancel:                               kssValidateField;
+    action-server:                               kssValidateMultilanguageField;
+    kssValidateMultilanguageField-fieldname:     kssAttr('atfieldname', true);
+    kssValidateMultilanguageField-kssSubmitForm: currentForm();
+    kssValidateMultilanguageField-uid:           kssAttr('atuid', true);
+}
+.languageMultiplier textarea.blurrable:blur {
+    action-cancel:                               kssValidateField;
+    action-server:                               kssValidateMultilanguageField;
+    kssValidateMultilanguageField-fieldname:     kssAttr('atfieldname', true);
+    kssValidateMultilanguageField-kssSubmitForm: currentForm();
+    kssValidateMultilanguageField-uid:           kssAttr('atuid', true);
+}
+
+.languageMultiplier form[action=criterion_edit_form] input.blurrable:blur {
+    action-cancel: kssValidateMultilanguageField;
+}
+
+.languageMultiplier form[action=criterion_edit_form] select.blurrable:blur {
+    action-cancel: kssValidateMultilanguageField;
+}
+
+.languageMultiplier form[action=criterion_edit_form] textarea.blurrable:blur {
+    action-cancel: kssValidateMultilanguageField;
+}

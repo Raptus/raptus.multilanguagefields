@@ -14,4 +14,12 @@
         name="multilanguagefields.kss"
         />
 
+    <browser:page
+        for="Products.Archetypes.interfaces.IBaseObject"
+        attribute="kssValidateMultilanguageField"
+        class=".validation.ValidationView"
+        name="kssValidateMultilanguageField"
+        permission="cmf.ModifyPortalContent"
+        />
+
 </configure>
