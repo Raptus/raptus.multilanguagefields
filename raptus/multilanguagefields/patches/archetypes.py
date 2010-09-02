@@ -110,6 +110,99 @@ def __new___setitem__(self, name, field):
 Schema.Schema.__setitem__ = __new___setitem__
 LOG.info("Products.Archetypes.Schema.Schema.__setitem__ patched")
 
+# patch for validate images and file upload
+# without this patch we can't keep an image by editing the content
+Schema.BasicSchema.__old_validate = Schema.BasicSchema.validate
+_marker = Schema._marker
+def __new_validate__(self, instance, REQUEST, errors, data, metadata):
+    """Validate the state of the entire object.
+
+    The passed dictionary ``errors`` will be filled with human readable
+    error messages as values and the corresponding fields' names as
+    keys.
+
+    If a REQUEST object is present, validate the field values in the
+    REQUEST.  Otherwise, validate the values currently in the object.
+    """
+    if REQUEST:
+        fieldset = REQUEST.form.get('fieldset', None)
+        fieldsets = REQUEST.form.get('fieldsets', None)
+    else:
+        fieldset = fieldsets = None
+    fields = []
+
+    if fieldsets is not None:
+        schemata = instance.Schemata()
+        for fieldset in fieldsets:
+            fields += [(field.getName(), field)
+                       for field in schemata[fieldset].fields()]            
+    elif fieldset is not None:
+        schemata = instance.Schemata()
+        fields = [(field.getName(), field)
+                  for field in schemata[fieldset].fields()]            
+    else:
+        if data:
+            fields.extend([(field.getName(), field)
+                           for field in self.filterFields(isMetadata=0)])
+        if metadata:
+            fields.extend([(field.getName(), field)
+                           for field in self.filterFields(isMetadata=1)])
+
+    if REQUEST:
+        form = REQUEST.form
+    else:
+        form = None
+        
+    for name, field in fields:
+        
+        # Should not validate something we can't write to anyway
+        if not field.writeable(instance):
+            continue
+        
+        error = 0
+        value = None
+        widget = field.widget
+        
+        if widget.isVisible(widget, 'edit') != 'visible':
+            continue
+        
+        if form:
+            result = widget.process_form(instance, field, form,
+                                         empty_marker=_marker)
+        else:
+            result = None
+        if IMultilanguageField.providedBy(field):
+            value = {}
+            for l, r in result[0].items():
+                if r is None or r is _marker:
+                    accessor = field.getEditAccessor(instance) or field.getAccessor(instance)
+                    if accessor is not None:
+                        r = accessor()
+                    else:
+                        # can't get value to validate -- bail
+                        continue
+                value[l] = r
+        else:
+            if result is None or result is _marker:
+                accessor = field.getEditAccessor(instance) or field.getAccessor(instance)
+                if accessor is not None:
+                    value = accessor()
+                else:
+                    # can't get value to validate -- bail
+                    continue
+            else:
+                value = result[0]
+
+        res = field.validate(instance=instance,
+                             value=value,
+                             errors=errors,
+                             REQUEST=REQUEST)
+        if res:
+            errors[field.getName()] = res
+    return errors
+Schema.BasicSchema.validate = __new_validate__
+LOG.info("Products.Archetypes.Schema.BasicSchema.validate patched")
+
 # Archetypes Schemata monkey patch to use the good field names
 Schema.Schemata.__old_addField = Schema.Schemata.addField
 def __new_addField(self, field):

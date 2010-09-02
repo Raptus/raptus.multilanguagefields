@@ -149,7 +149,7 @@ class MultilanguageFieldMixin(Base):
             value[lang['name']] = self.get(instance, lang=lang['name'])
         return value
     
-    security.declarePrivate('validate_required')
+    security.declarePrivate('validate')
     def validate(self, value, instance, errors=None, **kwargs):
         """ multilingual validation respecting language fallback
         """

@@ -29,8 +29,6 @@ class MultilanguageWidgetMixin(Base):
             elif result and not result is empty_marker:
                 values[lang['name']] = result
         field.resetLanguage()
-        if not len(values):
-            return empty_marker, kwargs
         return values, kwargs
     
 class StringWidget(MultilanguageWidgetMixin, widgets.StringWidget):
