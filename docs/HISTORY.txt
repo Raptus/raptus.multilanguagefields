@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.0b2 (2010-08-07)
+------------------
+
+* fixed validation process to work with file and image fields
+
 1.0b1 (2010-07-30)
 ------------------
 
