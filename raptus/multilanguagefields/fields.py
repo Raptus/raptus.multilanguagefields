@@ -19,7 +19,6 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFPlone import PloneMessageFactory as _
 from Products.Archetypes.Layer import DefaultLayerContainer
 
-from raptus.multilanguagefields import MultilanguageAware
 from raptus.multilanguagefields.interfaces import IMultilanguageField
 
 class MultilanguageFieldMixin(Base):
