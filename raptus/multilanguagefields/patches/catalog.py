@@ -4,18 +4,28 @@
 #===============================================================================
 from Missing import MV
 from Record import Record
+from zope.app.component.hooks import getSite
 from Products.ZCatalog import CatalogBrains
 from Products.ZCatalog.Catalog import Catalog, safe_callable
-from raptus.multilanguagefields.interfaces import IMultilanguageAware
-from raptus.multilanguagefields import MultilanguageAware
+from Products.CMFCore.utils import getToolByName
 from raptus.multilanguagefields import LOG
+
+try:
+    import json
+except:
+    import simplejson as json
 
 # CatalogBrain monkey patch
 def __new_init__(self, data):
     ndata = []
     for v in data:
-        if IMultilanguageAware.providedBy(v):
-            v = v()
+        try:
+            value = json.loads(v)
+            value = value['___multilanguage___']
+            lang = getToolByName(getSite(), 'portal_languages').getPreferredLanguage()
+            v = value.get(lang, '')
+        except:
+            pass
         ndata.append(v)
     Record.__init__(self, tuple(ndata))   
 CatalogBrains.AbstractCatalogBrain.__old_init__ = CatalogBrains.AbstractCatalogBrain.__init__ 
@@ -33,7 +43,7 @@ def new_recordify(self, object):
             try:
                 attr = attr(lang='all')
                 if isinstance(attr, dict):
-                    attr = MultilanguageAware(attr)
+                    attr = json.dumps(dict(___multilanguage___ = attr))
             except:
                 attr = attr()
         record.append(attr)

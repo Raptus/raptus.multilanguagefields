@@ -25,9 +25,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import Field
 
 import criteria
-from raptus.multilanguagefields.interfaces import IMultilanguageAware, IMultilanguageField
-
-from proxy import MultilanguageAware
+from raptus.multilanguagefields.interfaces import IMultilanguageField
 
 # monkey patches
 import patches 
