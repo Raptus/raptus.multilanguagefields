@@ -238,14 +238,6 @@ class ImageField(MultilanguageFieldMixin, fields.ImageField):
                 image = super(MultilanguageFieldMixin, self).getScale(instance, scale, **kwargs)
         self.resetLanguage()
         return image
-    
-    security.declarePrivate('get')
-    def get(self, instance, **kwargs):
-        value = self._wrapValue(instance, super(ImageField, self).get(instance, **kwargs))
-        if (shasattr(value, '__of__', acquire=True)
-            and not kwargs.get('unwrapped', False)):
-            return value.__of__(instance)
-        return value
 
     security.declareProtected(View, 'tag')
     def tag(self, instance, scale=None, height=None, width=None, alt=None,

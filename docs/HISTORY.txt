@@ -6,6 +6,9 @@ Changelog
 ------------------
 * fixed catalog patch. The catalog can't store proxy-class, so we need to
   parse the multi value to a string. This problem was only on plone4.0
+  
+* fixed error by creating new contenttypes. this error was provided by the get
+  method of ImageFields.
 
 1.0b2 (2010-08-07)
 ------------------
