@@ -20,10 +20,14 @@ def __new_init__(self, data):
     ndata = []
     for v in data:
         try:
+            try:
+                encoding = getToolByName(self, "portal_properties").site_properties.default_charset
+            except AttributeError:
+                encoding = 'ascii'
             value = json.loads(v)
             value = value['___multilanguage___']
             lang = getToolByName(getSite(), 'portal_languages').getPreferredLanguage()
-            v = value.get(lang, '')
+            v = value.get(lang, '').encode(encoding)
         except:
             pass
         ndata.append(v)

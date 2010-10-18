@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.0b4 (2010-10-18)
+------------------
+* fixed catalog patch. After load the data with json we get a encoding problem.
+  Noticeable by adding new portlet with non-ascii chars.
+
 
 1.0b3 (2010-08-20)
 ------------------
