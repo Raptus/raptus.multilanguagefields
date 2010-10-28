@@ -31,3 +31,10 @@ msgstr "traduire"
 #. Default: "translate"
 msgid "message_translate"
 msgstr "Êtes-vous sûr de vouloir remplacer la valeur actuelle de la langue \"{language}\" par la traduction générée \"{translation}\"?"
+
+#. Default: "${name} is required, please provide at least the default language."
+msgid "error_required_default"
+msgstr "${name} est obligatoire, veuillez entréz au minimum la langue générale."
+
+msgid "default language"
+msgstr "langue générale"

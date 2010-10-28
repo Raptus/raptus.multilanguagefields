@@ -12,6 +12,7 @@
 
 .languageMultiplier .formPanel {
   border: none;
+  margin: 0 !important;
   padding: 1em 0 0 0 !important;
 }
 

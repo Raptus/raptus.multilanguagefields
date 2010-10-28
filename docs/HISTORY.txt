@@ -1,11 +1,19 @@
 Changelog
 =========
 
+1.0b5 (2010-10-28)
+------------------
+
+* UI improvements
+    * Added custom validation error if default language is missing in a required field
+    * Default language always comes first and is marked
+* Removed .mo files from i18n folder
+* Fixed CSS bug in language tabs for plone 4
+
 1.0b4 (2010-10-18)
 ------------------
 * fixed catalog patch. After load the data with json we get a encoding problem.
   Noticeable by adding new portlet with non-ascii chars.
-
 
 1.0b3 (2010-08-20)
 ------------------

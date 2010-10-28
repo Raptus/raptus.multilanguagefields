@@ -16,9 +16,9 @@ from Products.Archetypes.Registry import registerField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import View, ModifyPortalContent
 
-from Products.CMFPlone import PloneMessageFactory as _
 from Products.Archetypes.Layer import DefaultLayerContainer
 
+from raptus.multilanguagefields import multilanguagefieldsMessageFactory as _
 from raptus.multilanguagefields.interfaces import IMultilanguageField
 
 class MultilanguageFieldMixin(Base):
@@ -31,15 +31,18 @@ class MultilanguageFieldMixin(Base):
         try:
             return getToolByName(context, 'portal_languages').getPreferredLanguage()
         except AttributeError:
-            return 'en';
-        
+            return 'en'
+
+    def haveLanguageFallback(self, context):
+         try:
+             portal_languages = getToolByName(context, 'portal_languages')
+         except:
+             return False
+         return portal_languages.allow_content_language_fallback
+
     def getDefaultLang(self, context):
-        try:
-            portal_languages = getToolByName(context, 'portal_languages')
-        except:
-            return None
-        if portal_languages.allow_content_language_fallback:
-            return portal_languages.getDefaultLanguage()
+        if self.haveLanguageFallback(context):
+            return getToolByName(context, 'portal_languages').getDefaultLanguage()
         else:
             return None
 
@@ -52,15 +55,22 @@ class MultilanguageFieldMixin(Base):
     
     security.declarePrivate('getAvailableLanguages')
     def getAvailableLanguages(self, context):
-        portal_state = queryMultiAdapter((context, context.REQUEST), name=u'plone_portal_state')
+        request = aq_get(context, 'REQUEST')
+        default = self.getDefaultLang(context)
+        portal_state = queryMultiAdapter((context, request), name=u'plone_portal_state')
         languages = portal_state.locale().displayNames.languages
-        current = self._getCurrentLanguage(context)
-        def current_first(x, y):
-            if x['name'] == current:
+        if self.haveLanguageFallback(context):
+            default_marker = " (%s)" % translate(_(u"default language"), context=request)
+        else:
+            default_marker = ""
+        langs = [{'name': name, 
+                  'title': translate(languages.get(name, title), context=request) +
+                           (name == default and default_marker or "")} for name, title in getToolByName(context, 'portal_languages').listSupportedLanguages()]
+        def default_first(x, y):
+            if x['name'] == default:
                 return -1
             return 0
-        langs = [{'name': name, 'title': languages.get(name, title)} for name, title in getToolByName(context, 'portal_languages').listSupportedLanguages()]
-        langs.sort(current_first)
+        langs.sort(default_first)
         return langs
 
     security.declarePrivate('setLanguage')
@@ -158,9 +168,29 @@ class MultilanguageFieldMixin(Base):
         else:
             for lang, val in value.items():
                 val = val or value.get(defaultLang, 0)
+                self.setLanguage(lang)
                 res = super(MultilanguageFieldMixin, self).validate(val, instance, errors, **kwargs)
-                if res is not None:
+                self.resetLanguage()
+                if res is not None and lang == defaultLang:
                     return res
+
+    security.declarePrivate('validate_required')
+    def validate_required(self, instance, value, errors):
+        res = super(MultilanguageFieldMixin, self).validate_required(instance, value, errors)
+        if self.haveLanguageFallback(instance) and res:
+            defaultLang = self.getDefaultLang(instance)
+            if self._v_lang == defaultLang:
+                request = aq_get(instance, 'REQUEST')
+                label = self.widget.Label(instance)
+                name = self.getName()
+                if isinstance(label, Message):
+                    label = translate(label, context=request)
+                res = _(u'error_required_default',
+                        default=u'${name} is required, please provide at least the default language.',
+                        mapping={'name': label})
+                res = translate(res, context=request)
+                errors[name] = res
+        return res
 
     def __repr__(self):
         """

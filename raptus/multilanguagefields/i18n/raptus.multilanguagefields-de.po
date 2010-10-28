@@ -32,3 +32,10 @@ msgstr "übersetzen"
 msgid "message_translate"
 msgstr "Sind Sie sicher, dass Sie den momentanen Wert der Sprache \"{language}\" durch die generierte Übersetzung \"{translation}\" ersetzen wollen?"
 
+#. Default: "${name} is required, please provide at least the default language."
+msgid "error_required_default"
+msgstr "${name} erfordert eine Eingabe, bitte geben Sie mindestens die Hauptsprache an."
+
+msgid "default language"
+msgstr "Hauptsprache"
+
