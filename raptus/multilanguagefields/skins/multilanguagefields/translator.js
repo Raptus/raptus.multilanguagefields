@@ -41,8 +41,8 @@ var translator = {
     var dds = jq(elm).find('dd');
     for(var i=0; i<dds.length; i++) {
       var dd = dds.get(i);
-      var args = dd.id.split('-');
-      var t = new translator.Translator(elm, dd, args[1], widgetType, args[2], translator.translators.length);
+      var args = dd.id.match("([^-]*)-(.*)-([^-\s]*)");
+      var t = new translator.Translator(elm, dd, args[2], widgetType, args[3], translator.translators.length);
     }
   }
 }
