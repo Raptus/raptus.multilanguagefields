@@ -8,6 +8,8 @@ var translator = {
     this.widgetType = widgetType;
     this.lang = lang;
     this.id = id;
+    this.dest = new Array();
+    this.value = '';
     translator.translators[id] = this;
     if(id == 0)
       this.getTranslator();
@@ -83,20 +85,28 @@ translator.Translator.prototype.translate = function() {
     });
   } else
     dest = new Array(dest);
-  value = value.split("\n").join("[[N]]");
-  while(d = dest.pop()) {
+  this.dest = dest;
+  this.value = value.split("\n").join("<break>");
+  this.translate_next();
+}
+
+translator.Translator.prototype.translate_next = function() {
+  if(d = this.dest.pop()) {
     jq.get(translator.base+'@@getTranslation', 
-           {string: value,
+           {string: this.value,
             source: this.lang,
             dest: d,
             id: this.id},
            translator.setTranslation);
+  } else {
+    jq(this.elm).find('.spinner').hide();
+    jq(this.elm).find('.context').show();
   }
 }
 
 translator.Translator.prototype.setTranslation = function(data) {
   language = jq(this.field).find('a[href=#fieldsetlegend-'+this.fieldName+'-'+data.dest+'] span').text();
-  translation = data.result.responseData.translatedText.split("[[N]]");
+  translation = data.result.responseData.translatedText.split("<break>");
   for(var i=0; i<translation.length; i++)
     translation[i] = jq.trim(translation[i]);
   translation = translation.join("\n");
@@ -104,13 +114,12 @@ translator.Translator.prototype.setTranslation = function(data) {
     this.setValue(translation, data.dest);
     jq(this.field).find('#fieldsetlegend-'+this.fieldName+'-'+data.dest).click();
   }
-  jq(this.elm).find('.spinner').hide();
-  jq(this.elm).find('.context').show();
+  this.translate_next();
 }
 
 translator.Translator.prototype.getValue = function(lang) {
-  if(lang) 
-      elm = jq(this.field).find('#fieldset-'+this.fieldName+'-'+lang);
+  if(lang)
+    elm = jq(this.field).find('#fieldset-'+this.fieldName+'-'+lang);
   else
     elm = jq(this.elm);
   switch(this.widgetType) {
@@ -123,8 +132,8 @@ translator.Translator.prototype.getValue = function(lang) {
       break;
     case 'keyword':
       keywords = elm.find('textarea').val();
-      if(elm.find('select:first').val())
-        keywords += (keywords ? "\n" : "")+elm.find('select:first').val().join("\n");
+      if(elm.find('div:not(.translator) select:first').val())
+        keywords += (keywords ? "\n" : "")+elm.find('div:not(.translator) select:first').val().join("\n");
       return keywords;
       break;
     case 'rich':
@@ -136,15 +145,14 @@ translator.Translator.prototype.getValue = function(lang) {
         else fieldId = jq('.fcklinkedField', elm).attr('id');
         return FCKeditorAPI.GetInstance(fieldId).GetXHTML();
       }
-	  else if (typeof tinyMCE != 'undefined') {
-	  	if (!lang) lang = this.lang;
-	  	fieldId = this.fieldName+'___'+lang+'___';
-		return tinyMCE.get(fieldId).getContent();
-	  }
-      // TODO : other editor implementation
-      else if (jq('textarea', elm).length) {
-        return elm.find('textarea').val();
+      else if (typeof tinyMCE != 'undefined') {
+        if (!lang) lang = this.lang;
+        fieldId = this.fieldName+'___'+lang+'___';
+        return tinyMCE.get(fieldId).getContent();
       }
+      // TODO : other editor implementation
+      else if(jq('textarea', elm).length)
+        return elm.find('textarea').val();
       break;
   }
 }
@@ -155,7 +163,7 @@ translator.Translator.prototype.setValue = function(value, lang) {
     case 'string':
       elm.find('input').val(value);
       break;
-    case 'textarea':    
+    case 'textarea':
     case 'lines':
       elm.find('textarea').val(value);
       break;
@@ -163,12 +171,18 @@ translator.Translator.prototype.setValue = function(value, lang) {
       value = value.split("\n");
       values = new Array();
       options = new Array();
-      for(var i=0; i<value.length; i++)
-        if(elm.find('select:first').find('option[value='+value[i]+']').length)
-          options.push(value[i]);
-        else
+      for(var i = 0; i < value.length; i++) {
+        option = false;
+        elm.find('div:not(.translator) select:first').find('option').each(function() {
+          if($(this).val() == value[i]) {
+            options.push(value[i]);
+            option = true;
+          }
+        });
+        if(!option)
           values.push(value[i]);
-      elm.find('select:first').val(options);
+      }
+      elm.find('div:not(.translator) select:first').val(options);
       elm.find('textarea').val(values.join("\n"));
       break;
     case 'rich':
@@ -177,14 +191,14 @@ translator.Translator.prototype.setValue = function(value, lang) {
       }
       else if (typeof FCKeditorAPI != 'undefined') {
         if (lang) fieldId = this.fieldName+'___'+lang+'___';
-        else fieldId = jq('.fcklinkedField', elm).attr('id');          
+        else fieldId = jq('.fcklinkedField', elm).attr('id');
         FCKeditorAPI.GetInstance(this.fieldName+'___'+lang+'___').SetHTML(value);
       }
-	  else if (typeof tinyMCE != 'undefined') {
-	  	if (!lang) lang = this.lang;
-	  	fieldId = this.fieldName+'___'+lang+'___';
-		return tinyMCE.get(fieldId).setContent(value);
-	  }
+      else if (typeof tinyMCE != 'undefined') {
+        if (!lang) lang = this.lang;
+        fieldId = this.fieldName+'___'+lang+'___';
+      return tinyMCE.get(fieldId).setContent(value);
+      }
       // TODO : other editor implementation
       else if (jq('textarea', elm).length) {
         elm.find('textarea').val(value);
