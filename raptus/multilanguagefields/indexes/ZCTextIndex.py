@@ -17,19 +17,16 @@ class MultilanguageZCTextIndex(ZCTextIndex):
     meta_type = 'MultilanguageZCTextIndex'
 
     _v_lang = None
-    _v_langs = []
 
     def _getCurrentLanguage(self):
         return getToolByName(getSite(), 'portal_languages').getPreferredLanguage()
 
     @property
     def languages(self):
-        if not self._v_langs:
-            ltool = getToolByName(getSite(), 'portal_languages', None)
-            if ltool is None:
-                return []
-            self._v_langs = ltool.getSupportedLanguages()
-        return self._v_langs
+        ltool = getToolByName(getSite(), 'portal_languages', None)
+        if ltool is None:
+            return []
+        return ltool.getSupportedLanguages()
     
     def _get_lang_index(self, lang):
         if not hasattr(self, '_index_%s' % lang):

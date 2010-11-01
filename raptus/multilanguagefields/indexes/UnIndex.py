@@ -16,7 +16,6 @@ class MultilanguageUnIndex(UnIndex):
     """
     
     _v_lang = None
-    _v_langs = []
     _d_length = PersistentDict()
     _d_index = PersistentDict()
     _d_unindex = PersistentDict()
@@ -108,12 +107,10 @@ class MultilanguageUnIndex(UnIndex):
 
     @property
     def languages(self):
-        if not self._v_langs:
-            ltool = getToolByName(getSite(), 'portal_languages', None)
-            if ltool is None:
-                return []
-            self._v_langs = ltool.getSupportedLanguages()
-        return self._v_langs
+        ltool = getToolByName(getSite(), 'portal_languages', None)
+        if ltool is None:
+            return []
+        return ltool.getSupportedLanguages()
 
     def index_object(self, documentId, obj, threshold=None):
         """ wrapper to handle indexing of multiple attributes """
