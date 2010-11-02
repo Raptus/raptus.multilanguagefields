@@ -6,7 +6,7 @@ from Products.Archetypes.Registry import registerWidget
 
 try:
     from archetypes.referencebrowserwidget.widget import ReferenceBrowserWidget as BaseReferenceBrowserWidget
-except:
+except ImportError: # Plone 3.x
     from Products.ATReferenceBrowserWidget.ATReferenceBrowserWidget import ReferenceBrowserWidget as BaseReferenceBrowserWidget
 
 class MultilanguageWidgetMixin(Base):
@@ -28,7 +28,7 @@ class MultilanguageWidgetMixin(Base):
                 kwargs[lang['name']] = result[1]
             elif result and not result is empty_marker:
                 values[lang['name']] = result
-        field.resetLanguage()
+            field.resetLanguage()
         return values, kwargs
     
 class StringWidget(MultilanguageWidgetMixin, widgets.StringWidget):
@@ -219,7 +219,7 @@ registerWidget(ImageWidget,
                             'uploading/displaying an image'),
                used_for=('raptus.multilanguagefields.fields.ImageField',)
                )
-    
+
 registerWidget(ReferenceBrowserWidget,
                title='Multilanguage Reference Browser',
                description=('Reference widget that allows you to browse or search the portal for objects to refer to.'),

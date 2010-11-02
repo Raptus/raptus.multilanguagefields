@@ -26,6 +26,25 @@ class MultilanguageFieldMixin(Base):
     
     security = ClassSecurityInfo()
     _v_lang = None
+
+    # making required fields not required if language fallback is enabled
+    # and the current language is not the default one
+    def __init__(self, name=None, **kwargs):
+        self._required = kwargs.has_key('required') and kwargs['required'] or self._properties['required']
+        super(MultilanguageFieldMixin, self).__init__(name, **kwargs)
+    def _set_required(self, value):
+        self._required = value
+    def _get_required(self):
+        context = getSite()
+        if self.haveLanguageFallback(context):
+            current = self._v_lang
+            if current is None:
+                current = self._getCurrentLanguage(context)
+            default = self.getDefaultLang(context)
+            return default == current and getattr(self, '_required', False)
+        return getattr(self, '_required', False)
+    required = property(fget=_get_required,
+                        fset=_set_required)
     
     def _getCurrentLanguage(self, context):
         try:
@@ -94,18 +113,17 @@ class MultilanguageFieldMixin(Base):
         set all lang values
         if value is not a dict, set the value for the current language
         """
-        current_lang = self._getCurrentLanguage(instance)
-        if not value :
+        if not value:
             return
         if value and not isinstance(value, dict):
-            neutralValue = value
-            value = {current_lang: neutralValue} 
+            current_lang = self._getCurrentLanguage(instance)
+            value = {current_lang: value}
         for lang, val in value.items():
             self.setLanguage(lang)
             kw = kwargs.copy()
             kw.update(kwargs.get(lang, {}))
             super(MultilanguageFieldMixin, self).set(instance, val, **kw)
-        self.resetLanguage()
+            self.resetLanguage()
         if not hasattr(instance, self.getName()):
             generator = Generator()
             classgenerator = ClassGenerator()
@@ -114,8 +132,9 @@ class MultilanguageFieldMixin(Base):
     
     security.declarePrivate('get')
     def get(self, instance, **kwargs):
-        name = self.getName()
-        if not name.endswith('___'):
+        if self._v_lang:
+            value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
+        else:
             if not kwargs.has_key('lang'):
                 kwargs['lang'] = self._getCurrentLanguage(instance)
             if kwargs['lang'] == 'all':
@@ -128,14 +147,13 @@ class MultilanguageFieldMixin(Base):
                     self.setLanguage(defaultLang)
                     value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
             self.resetLanguage()
-        else:
-            value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
         return value
 
     security.declarePrivate('getRaw')
     def getRaw(self, instance, **kwargs):
-        name = self.getName()
-        if not name.endswith('___'):
+        if self._v_lang:
+            value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
+        else:
             if not kwargs.has_key('lang'):
                 kwargs['lang'] = self._getCurrentLanguage(instance)
             self.setLanguage(kwargs['lang'])
@@ -146,8 +164,6 @@ class MultilanguageFieldMixin(Base):
                     self.setLanguage(defaultLang)
                     value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
             self.resetLanguage()
-        else:
-            value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
         return value
     
     security.declarePrivate('getAll')
@@ -255,13 +271,13 @@ class ImageField(MultilanguageFieldMixin, fields.ImageField):
     def getScale(self, instance, scale=None, **kwargs):
         """Get scale by name or original
         """
-        if self._v_lang and not kwargs.has_key('lang'):
+        if self._v_lang:
             return super(ImageField, self).getScale(instance, scale, **kwargs)
         if not kwargs.has_key('lang'):
             kwargs['lang'] = self._getCurrentLanguage(instance)
         self.setLanguage(kwargs['lang'])
         image = super(ImageField, self).getScale(instance, scale, **kwargs)
-        if not image:
+        if not image or not image.get_size():
             defaultLang = self.getDefaultLang(instance)
             if defaultLang:
                 self.setLanguage(defaultLang)
@@ -274,7 +290,7 @@ class ImageField(MultilanguageFieldMixin, fields.ImageField):
             css_class=None, title=None, **kwargs):
         """Create a tag including scale
         """
-        if self._v_lang and not kwargs.has_key('lang'):
+        if self._v_lang:
             return super(ImageField, self).tag(instance, scale, height, width, alt, css_class, title, **kwargs)
         if not kwargs.has_key('lang'):
             kwargs['lang'] = self._getCurrentLanguage(instance)
@@ -283,22 +299,76 @@ class ImageField(MultilanguageFieldMixin, fields.ImageField):
         if not value or not value.get_size():
             defaultLang = self.getDefaultLang(instance)
             if defaultLang:
-                kwargs['lang'] = defaultLang
-                self.setLanguage(kwargs['lang'])
+                self.setLanguage(defaultLang)
         tag = super(ImageField, self).tag(instance, scale, height, width, alt, css_class, title, **kwargs)
         self.resetLanguage()
         return tag
     
 try:
-    # FIXME: The multilanguage blob field does not yet work
-    from plone.app.blob.field import BlobField as BaseBlobField
-    class BlobField(MultilanguageFieldMixin, BaseBlobField):
-        _properties = BaseBlobField._properties.copy()
+    from plone.app.blob.field import ImageField as BaseBlobImageField, FileField as BaseBlobFileField
+    from plone.app.imaging.interfaces import IImageScaleHandler
+    class BlobFileField(MultilanguageFieldMixin, BaseBlobFileField):
+        _properties = BaseBlobFileField._properties.copy()
 
-    registerField(BlobField,
-                  title='Multilanguage Blob',
+        security = ClassSecurityInfo()
+
+        security.declarePrivate('getUnwrapped')
+        def getUnwrapped(self, instance, **kwargs):
+            return super(BlobFileField, self).get(instance, **kwargs)
+    
+    class BlobImageField(MultilanguageFieldMixin, BaseBlobImageField):
+        _properties = BaseBlobImageField._properties.copy()
+    
+        security = ClassSecurityInfo()
+
+        security.declarePrivate('getUnwrapped')
+        def getUnwrapped(self, instance, **kwargs):
+            return super(BlobImageField, self).get(instance, **kwargs)
+    
+        security.declareProtected(View, 'tag')
+        def tag(self, instance, scale=None, height=None, width=None, alt=None,
+                css_class=None, title=None, **kwargs):
+            """Create a tag including scale
+            """
+            if self._v_lang:
+                return super(BlobImageField, self).tag(instance, scale, height, width, alt, css_class, title, **kwargs)
+            if not kwargs.has_key('lang'):
+                kwargs['lang'] = self._getCurrentLanguage(instance)
+            self.setLanguage(kwargs['lang'])
+            value = self.get(instance, **kwargs)
+            if not value or not value.get_size():
+                defaultLang = self.getDefaultLang(instance)
+                if defaultLang:
+                    self.setLanguage(defaultLang)
+            tag = super(BlobImageField, self).tag(instance, scale, height, width, alt, css_class, title, **kwargs)
+            self.resetLanguage()
+            return tag
+    
+        security.declareProtected(View, 'getScale')
+        def getScale(self, instance, scale=None, **kwargs):
+            """ get scale by name or original """
+            if self._v_lang:
+                return super(BlobImageField, self).getScale(instance, scale, **kwargs)
+            if not kwargs.has_key('lang'):
+                kwargs['lang'] = self._getCurrentLanguage(instance)
+            self.setLanguage(kwargs['lang'])
+            image = super(BlobImageField, self).getScale(instance, scale, **kwargs)
+            if not image or not image.get_size():
+                defaultLang = self.getDefaultLang(instance)
+                if defaultLang:
+                    self.setLanguage(defaultLang)
+                    image = super(BlobImageField, self).getScale(instance, scale, **kwargs)
+            self.resetLanguage()
+            return image
+
+    registerField(BlobFileField,
+                  title='Multilanguage Blob File',
                   description='Used for storing files in blobs')
-except:
+
+    registerField(BlobImageField,
+                  title='Multilanguage Blob Image',
+                  description='Used for storing images in blobs')
+except ImportError:
     pass
     
 registerField(StringField,

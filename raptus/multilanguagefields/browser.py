@@ -60,4 +60,3 @@ class Translation(BrowserView):
             id: %s,
             data: '%s'
             }""" % (id, context.translator(fieldName=fieldName, widgetType=widgetType, languages=languages, lang=lang, id=id).replace("\n", ""))
-        

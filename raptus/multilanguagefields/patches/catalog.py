@@ -31,13 +31,13 @@ def __new_init__(self, data):
         except:
             pass
         ndata.append(v)
-    Record.__init__(self, tuple(ndata))   
+    Record.__init__(self, tuple(ndata))
 CatalogBrains.AbstractCatalogBrain.__old_init__ = CatalogBrains.AbstractCatalogBrain.__init__ 
 CatalogBrains.AbstractCatalogBrain.__init__ = __new_init__
 LOG.info("Products.ZCatalog.CatalogBrains.AbstractCatalogBrain.__init__ patched") 
 
 # catalog monkey patch to support languageaware metadata
-def new_recordify(self, object):
+def __new_recordify(self, object):
     """ turns an object into a record tuple """
     record = []
     # the unique id is always the first element
@@ -53,6 +53,6 @@ def new_recordify(self, object):
         record.append(attr)
     return tuple(record)
 
-Catalog.old_recordify = Catalog.recordify   
-Catalog.recordify = new_recordify
-LOG.info("Products.ZCatalog.Catalog.Catalog.recordify patched")    
+Catalog.old_recordify = Catalog.recordify
+Catalog.recordify = __new_recordify
+LOG.info("Products.ZCatalog.Catalog.Catalog.recordify patched")

@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.0b6 (2010-11-03)
+------------------
+
+* fixed multilanguage blob file and image fields
+* added patches for image and file content types (previously located in raptus.multilanguageplone)
+* fixed required attribute handling if language fallback is enabled
+* removed versatile caching of supported languages in indexes to prevent invalidity when changing
+  the supported languages and not restarting zope
+
 1.0b5 (2010-10-28)
 ------------------
 
