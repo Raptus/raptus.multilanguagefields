@@ -41,25 +41,29 @@ try:
     """ Patch methods for content types having blob ImageFields or FileFields
     """
     from plone.app.imaging.interfaces import IImageScaleHandler
-    
-    def setBlob(self, value, **kw):
-        """ Patched set method for:
-            plone.app.blob.mixins.ImageMixin.setImage
-            plone.app.blob.content.ATBlob.setFile
-        """
+
+    def setImage(self, value, **kw):
         if kw.has_key('schema'):
             schema = kw['schema']
         else:
             schema = self.Schema()
             kw['schema'] = schema
         return schema['image'].set(self, value, **kw)
-    
+
     from plone.app.blob.mixins import ImageMixin
-    ImageMixin.setImage = setBlob
+    ImageMixin.setImage = setImage
     LOG.info("plone.app.blob.mixins.ImageMixin.setImage patched")
-    
+
+    def setFile(self, value, **kw):
+        if kw.has_key('schema'):
+            schema = kw['schema']
+        else:
+            schema = self.Schema()
+            kw['schema'] = schema
+        return schema['file'].set(self, value, **kw)
+
     from plone.app.blob.content import ATBlob
-    ATBlob.setFile = setBlob
+    ATBlob.setFile = setFile
     LOG.info("plone.app.blob.content.ATBlob.setFile patched")
 
     def __blob__bobo_traverse__(self, REQUEST, name):
