@@ -95,7 +95,8 @@ class MultilanguageFieldMixin(Base):
     security.declarePrivate('setLanguage')
     def setLanguage(self, lang):
         self.resetLanguage()
-        self._v_lang = lang
+        if not lang == 'original':
+            self._v_lang = lang
     
     security.declarePrivate('resetLanguage')
     def resetLanguage(self):
@@ -140,6 +141,9 @@ class MultilanguageFieldMixin(Base):
             if kwargs['lang'] == 'all':
                 return self.getAll(instance, **kwargs)
             self.setLanguage(kwargs['lang'])
+            # prevent overriding of default language when getting the original one
+            if kwargs['lang'] == 'original' and self.getDefault(instance):
+                kwargs['_initializing_'] = True
             value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
             if not value:
                 defaultLang = self.getDefaultLang(instance)
