@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.0b7 (2010-11-03)
+------------------
+
+* created migration script to migrate content of a previously monolingual site into the
+  default language of the appropriate multilanguage fields
+* added possibility to get the original language of a field by passing lang='original'
+* fixed AttributeError in getTranslator method
+
 1.0b6 (2010-11-02)
 ------------------
 
