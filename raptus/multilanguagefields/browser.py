@@ -55,6 +55,8 @@ class Translation(BrowserView):
         while not getattr(context, 'Schema', None):
             context = aq_parent(context)
         field = context.Schema().getField(fieldName)
+        if field is None:
+            return
         languages = [l for l in field.getAvailableLanguages(context) if not l['name'] == lang]
         return """{
             id: %s,
