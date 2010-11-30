@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.0b8 (2010-11-30)
+------------------
+
+* moved scripts folder into the package to make it available in the egg
+
 1.0b7 (2010-11-03)
 ------------------
 
