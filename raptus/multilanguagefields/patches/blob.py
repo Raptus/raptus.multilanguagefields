@@ -3,6 +3,7 @@
 from raptus.multilanguagefields import LOG
 try:
     from plone.app.imaging.interfaces import IImageScaleHandler
+    from Products.Archetypes.BaseObject import BaseObject
 
     def setImage(self, value, **kw):
         if kw.has_key('schema'):
@@ -56,7 +57,7 @@ try:
                 field.setLanguage(lang_before)
             if image is not None:
                 return image
-        return super(ATBlob, self).__bobo_traverse__(REQUEST, name)
+        return BaseObject.__bobo_traverse__(self, REQUEST, name)
 
     ATBlob.__bobo_traverse__ = __blob__bobo_traverse__
     LOG.info("plone.app.blob.content.ATBlob.__bobo_traverse__ patched")

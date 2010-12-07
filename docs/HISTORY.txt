@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.0b9 (2010-12-07)
+------------------
+
+* fixed traverse patches for ATImage and ATBlob which lead to a recursion when
+  subclassing one of those types
+
 1.0b8 (2010-11-30)
 ------------------
 

@@ -2,7 +2,7 @@
 # using multilanguage image or file fields
 
 from raptus.multilanguagefields import LOG
-from Products.ATContentTypes.content.base import ATCTFileContent
+from Products.Archetypes.BaseObject import BaseObject
 def __bobo_traverse__(self, REQUEST, name):
     """Transparent access to multilanguage image scales for
        content types holding an multilanguage ImageField named
@@ -30,7 +30,7 @@ def __bobo_traverse__(self, REQUEST, name):
         if image is not None and not isinstance(image, basestring):
             # image might be None or '' for empty images
             return image
-    return super(self.__class__, self).__bobo_traverse__(REQUEST, name)
+    return BaseObject.__bobo_traverse__(self, REQUEST, name)
 
 from Products.ATContentTypes.content.image import ATImage
 ATImage.__bobo_traverse__ = __bobo_traverse__
