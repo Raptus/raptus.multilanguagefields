@@ -18,16 +18,18 @@ except:
 # CatalogBrain monkey patch
 def __new_init__(self, data):
     ndata = []
+    lang = getToolByName(getSite(), 'portal_languages').getPreferredLanguage()
+    try:
+        encoding = getToolByName(self, "portal_properties").site_properties.default_charset
+    except AttributeError:
+        encoding = 'ascii'
     for v in data:
         try:
-            try:
-                encoding = getToolByName(self, "portal_properties").site_properties.default_charset
-            except AttributeError:
-                encoding = 'ascii'
             value = json.loads(v)
             value = value['___multilanguage___']
-            lang = getToolByName(getSite(), 'portal_languages').getPreferredLanguage()
-            v = value.get(lang, '').encode(encoding)
+            v = value.get(lang, '')
+            if isinstance(v, basestring):
+                v = v.encode(encoding)
         except:
             pass
         ndata.append(v)

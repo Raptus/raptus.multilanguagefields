@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.0b10 (2010-12-08)
+-------------------
+
+* fixed CatalogBrain patch (now works for values other than strings, e.g. Subject)
+
 1.0b9 (2010-12-07)
 ------------------
 
