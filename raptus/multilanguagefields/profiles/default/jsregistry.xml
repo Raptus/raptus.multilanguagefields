@@ -3,4 +3,7 @@
  <javascript cacheable="True" compression="none" cookable="True"
     enabled="True" expression="python: not here.restrictedTraverse('@@plone_portal_state').anonymous()"
     id="translator.js" inline="False"/>
+ <javascript cacheable="True" compression="none" cookable="True"
+    enabled="True" expression="python: not here.restrictedTraverse('@@plone_portal_state').anonymous()"
+    id="validation_helper.js" inline="False"/>
 </object>

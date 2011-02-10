@@ -183,6 +183,7 @@ class MultilanguageFieldMixin(Base):
         """ multilingual validation respecting language fallback
         """
         defaultLang = self.getDefaultLang(instance)
+        request = kwargs.get('REQUEST')
         if not isinstance(value, dict):
             return super(MultilanguageFieldMixin, self).validate(value, instance, errors, **kwargs)
         else:
@@ -191,6 +192,16 @@ class MultilanguageFieldMixin(Base):
                 self.setLanguage(lang)
                 res = super(MultilanguageFieldMixin, self).validate(val, instance, errors, **kwargs)
                 self.resetLanguage()
+                # return the first error if langFallback is deactivated
+                if res is not None and defaultLang is None:
+                    if request.form.get('form.button.save', False):
+                        return res
+                    # request came from ajax validation
+                    # only validate a single language field
+                    # need a helper javascript validation_helper.js
+                    fieldname = request.form.get('fieldname')
+                    if request.form.get('multilanguagefield_validation','') == '%s___%s___' % (fieldname, lang):
+                        return res
                 if res is not None and lang == defaultLang:
                     return res
 
