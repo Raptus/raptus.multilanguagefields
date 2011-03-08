@@ -36,6 +36,7 @@ setup(name='raptus.multilanguagefields',
       zip_safe=False,
       install_requires=[
           'setuptools',
+          'simplejson',
           # -*- Extra requirements: -*-
       ],
       entry_points="""

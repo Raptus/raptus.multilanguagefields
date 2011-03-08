@@ -40,8 +40,11 @@ var translator = {
     var widgetType = elm.className.split(' ')[2];
     var dds = jq(elm).find('dd');
     for(var i=0; i<dds.length; i++) {
-      var dd = dds.get(i);
-      var args = dd.id.match("([^-]*)-(.*)-([^-\s]*)");
+      var dd = jq(dds.get(i));
+      var id = dd.attr('id');
+      var regex = /^([^-]*)-([^-\s]*)-(.*)$/;
+      if(!regex.test(id)) continue;
+      var args = id.match(regex);
       var t = new translator.Translator(elm, dd, args[2], widgetType, args[3], translator.translators.length);
     }
   }
@@ -113,6 +116,7 @@ translator.Translator.prototype.setTranslation = function(data) {
   if(!this.getValue(data.dest) || window.confirm(data.message.replace('{language}', language).replace('{translation}', translator.crop(translation, 150)))) {
     this.setValue(translation, data.dest);
     jq(this.field).find('#fieldsetlegend-'+this.fieldName+'-'+data.dest).click();
+    jq(this.field).find('a[href="#fieldsetlegend-'+this.fieldName+'-'+data.dest+'"]').click();
   }
   this.translate_next();
 }
@@ -137,18 +141,29 @@ translator.Translator.prototype.getValue = function(lang) {
       return keywords;
       break;
     case 'rich':
-      if (jq('.kupu-editor-iframe', elm).length) {
+      if (elm.find('.kupu-editor-iframe').size()) {
         return elm.find('.kupu-editor-iframe').contents().find("body").html();
       }
-      else if (typeof FCKeditorAPI != 'undefined') {
-        if (lang) fieldId = this.fieldName+'___'+lang+'___';
-        else fieldId = jq('.fcklinkedField', elm).attr('id');
-        return FCKeditorAPI.GetInstance(fieldId).GetXHTML();
+      if (typeof FCKeditorAPI != 'undefined') {
+        try {
+          if (lang) fieldId = this.fieldName+'___'+lang+'___';
+          else fieldId = jq('.fcklinkedField', elm).attr('id');
+          return FCKeditorAPI.GetInstance(fieldId).GetXHTML();
+        } catch(e) {};
       }
-      else if (typeof tinyMCE != 'undefined') {
-        if (!lang) lang = this.lang;
-        fieldId = this.fieldName+'___'+lang+'___';
-        return tinyMCE.get(fieldId).getContent();
+      if (typeof CKEDITOR != 'undefined') {
+        try {
+          if (!lang) lang = this.lang;
+          var fieldId = this.fieldName+'___'+lang+'___';
+          return CKEDITOR.instances[fieldId].getData();
+        } catch(e) {};
+      }
+      if (typeof tinyMCE != 'undefined') {
+        try {
+          if (!lang) lang = this.lang;
+          fieldId = this.fieldName+'___'+lang+'___';
+          return tinyMCE.get(fieldId).getContent();
+        } catch(e) {};
       }
       // TODO : other editor implementation
       else if(jq('textarea', elm).length)
@@ -186,18 +201,32 @@ translator.Translator.prototype.setValue = function(value, lang) {
       elm.find('textarea').val(values.join("\n"));
       break;
     case 'rich':
-      if (jq('.kupu-editor-iframe', elm).length) {
+      if (elm.find('.kupu-editor-iframe').size()) {
         elm.find('.kupu-editor-iframe').contents().find("body").html(value);
+        return;
       }
-      else if (typeof FCKeditorAPI != 'undefined') {
-        if (lang) fieldId = this.fieldName+'___'+lang+'___';
-        else fieldId = jq('.fcklinkedField', elm).attr('id');
-        FCKeditorAPI.GetInstance(this.fieldName+'___'+lang+'___').SetHTML(value);
+      if (typeof FCKeditorAPI != 'undefined') {
+        try {
+          if (lang) fieldId = this.fieldName+'___'+lang+'___';
+          else fieldId = jq('.fcklinkedField', elm).attr('id');
+          FCKeditorAPI.GetInstance(this.fieldName+'___'+lang+'___').SetHTML(value);
+          return;
+        } catch(e) {};
       }
-      else if (typeof tinyMCE != 'undefined') {
-        if (!lang) lang = this.lang;
-        fieldId = this.fieldName+'___'+lang+'___';
-      return tinyMCE.get(fieldId).setContent(value);
+      if (typeof CKEDITOR != 'undefined') {
+        try {
+          if (!lang) lang = this.lang;
+          var fieldId = this.fieldName+'___'+lang+'___';
+          CKEDITOR.instances[fieldId].setData(value);
+          return;
+        } catch(e) {};
+      }
+      if (typeof tinyMCE != 'undefined') {
+        try {
+          if (!lang) lang = this.lang;
+          fieldId = this.fieldName+'___'+lang+'___';
+          return tinyMCE.get(fieldId).setContent(value);
+        } catch(e) {};
       }
       // TODO : other editor implementation
       else if (jq('textarea', elm).length) {

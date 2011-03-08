@@ -1,5 +1,9 @@
 import urllib
 import re
+try:
+    import json
+except ImportError: # Python <= 2.5
+    import simplejson as json
 
 from Acquisition import aq_inner, aq_parent
 from htmlentitydefs import name2codepoint as n2cp
@@ -37,18 +41,14 @@ class Translation(BrowserView):
         return urllib.urlopen(url, urllib.urlencode(params)).read()
     
     def getTranslation(self, string, source, dest, id=0):
-        result = self.getRawTranslation(string, source, dest);
-        return """{
-            id: %s,
-            source: '%s',
-            dest: '%s',
-            message: '%s',
-            result: %s
-            }""" % (id, 
-                    source, 
-                    dest, 
-                    translate(_('message_translate', default=u'Are you sure you want to replace the current value for the language "{language}" by the generated translation "{translation}"?'), context=self.request), 
-                    decode_htmlentities(result.decode('utf-8')))
+        result = json.loads(self.getRawTranslation(string, source, dest).decode('utf-8'));
+        result[u'responseData'][u'translatedText'] = decode_htmlentities(result[u'responseData'][u'translatedText'])
+        return json.dumps({
+            'id': id,
+            'source': source,
+            'dest': dest,
+            'message': translate(_('message_translate', default=u'Are you sure you want to replace the current value for the language "{language}" by the generated translation "{translation}"?'), context=self.request),
+            'result': result})
 
     def getTranslator(self, fieldName, widgetType, lang, id):
         context = aq_inner(self.context)
@@ -58,7 +58,6 @@ class Translation(BrowserView):
         if field is None:
             return
         languages = [l for l in field.getAvailableLanguages(context) if not l['name'] == lang]
-        return """{
-            id: %s,
-            data: '%s'
-            }""" % (id, context.translator(fieldName=fieldName, widgetType=widgetType, languages=languages, lang=lang, id=id).replace("\n", ""))
+        return json.dumps({
+            'id': id,
+            'data': context.translator(fieldName=fieldName, widgetType=widgetType, languages=languages, lang=lang, id=id).replace("\n", "")})

@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.0b12 (2011-03-08)
+-------------------
+
+* fixed issue when translating text containing double quotes
+* added support for CKEditor (collective.ckeditor)
+* fixed tab selection issue after successful translation
 
 1.0b11 (2011-02-10)
 -------------------
