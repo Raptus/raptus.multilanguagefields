@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.0b13 (2011-03-16)
+-------------------
+
+* fixed translator.js (selection of translable content)
+
 1.0b12 (2011-03-08)
 -------------------
 

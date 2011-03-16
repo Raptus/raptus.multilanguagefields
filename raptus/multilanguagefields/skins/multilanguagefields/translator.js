@@ -42,7 +42,9 @@ var translator = {
     for(var i=0; i<dds.length; i++) {
       var dd = jq(dds.get(i));
       var id = dd.attr('id');
-      var regex = /^([^-]*)-([^-\s]*)-(.*)$/;
+      var fieldname = jq(dd).parents('.field').attr('id');
+      fieldname = fieldname.replace('archetypes-fieldname-','');
+      var regex = new RegExp('(fieldset-)('+fieldname+')-(.*)','');
       if(!regex.test(id)) continue;
       var args = id.match(regex);
       var t = new translator.Translator(elm, dd, args[2], widgetType, args[3], translator.translators.length);
