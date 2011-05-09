@@ -18,7 +18,7 @@ var validation_helper = {
       form.append('<input type="hidden" name="multilanguagefield_validation" />');
     input = form.find('input[name="multilanguagefield_validation"]');
     input.attr('value', jq(obj.target).attr('name'));
-  },
+  }
 }
 
 

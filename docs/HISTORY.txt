@@ -1,10 +1,15 @@
 Changelog
 =========
 
+1.0b14 (2011-05-09)
+-------------------
+
+* fixed validation_helper.js (removed misplaced ',' which raised a javascript error in IE)
+
 1.0b13 (2011-03-16)
 -------------------
 
-* fixed translator.js (selection of translable content)
+* fixed translator.js (selection of translatable content)
 
 1.0b12 (2011-03-08)
 -------------------
