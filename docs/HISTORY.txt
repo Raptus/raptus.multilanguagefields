@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.0b15 (2011-09-09)
+-------------------
+
+* Added patches to make caching of images and files language aware
+
 1.0b14 (2011-05-09)
 -------------------
 
