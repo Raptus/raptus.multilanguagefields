@@ -114,11 +114,20 @@ class MultilanguageFieldMixin(Base):
         set all lang values
         if value is not a dict, set the value for the current language
         """
-        if not value:
-            return
-        if value and not isinstance(value, dict):
-            current_lang = self._getCurrentLanguage(instance)
-            value = {current_lang: value}
+        if kwargs.get('_initializing_', False) and not isinstance(value, dict):
+            try:
+                languages = getToolByName(instance, 'portal_languages').listSupportedLanguages()
+            except AttributeError:
+                return
+            new_value = {}
+            for lang, name in languages:
+                new_value[lang] = value
+            value = new_value
+        if not isinstance(value, dict):
+            if self._v_lang:
+                value = {self._v_lang: value}
+            else:
+                value = {self._getCurrentLanguage(instance): value}
         for lang, val in value.items():
             self.setLanguage(lang)
             kw = kwargs.copy()
@@ -145,7 +154,7 @@ class MultilanguageFieldMixin(Base):
             if kwargs['lang'] == 'original' and self.getDefault(instance):
                 kwargs['_initializing_'] = True
             value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
-            if not value:
+            if not value and not kwargs.get('raw', False):
                 defaultLang = self.getDefaultLang(instance)
                 if defaultLang:
                     self.setLanguage(defaultLang)

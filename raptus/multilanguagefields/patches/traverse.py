@@ -2,6 +2,7 @@
 # using multilanguage image or file fields
 
 from raptus.multilanguagefields import LOG
+from raptus.multilanguagefields.interfaces import IMultilanguageField
 from Products.Archetypes.BaseObject import BaseObject
 def __bobo_traverse__(self, REQUEST, name):
     """Transparent access to multilanguage image scales for
@@ -12,21 +13,29 @@ def __bobo_traverse__(self, REQUEST, name):
     """
     if name.startswith('image'):
         field = self.getField('image')
-        image = None
-        if name == 'image':
-            image = field.getScale(self)
-        elif '___' in name:
-            name, lang, scalename = name.split('___')
+        if not IMultilanguageField.providedBy(field):
+            return BaseObject.__bobo_traverse__(self, REQUEST, name)
+        fieldname, scale = name, None
+        if '___' in name:
+            fieldname, lang, scalename = name.split('___')
             if scalename:
-                scalename = scalename[1:]
-                if scalename in field.getAvailableSizes(self):
-                    image = field.getScale(self, scale=scalename, lang=lang)
-            else:
-                image = field.getScale(self, lang=lang)
+                scale = scalename[1:]
         else:
-            scalename = name[len('image_'):]
-            if scalename in field.getAvailableSizes(self):
-                image = field.getScale(self, scale=scalename)
+            if '_' in name:
+                fieldname, scale = name.split('_', 1)
+            if REQUEST.get('HTTP_USER_AGENT', False):
+                return REQUEST.RESPONSE.redirect(self.absolute_url+'/'+fieldname+'___'+field._getCurrentLanguage(self)+'____'+str(scale))
+            else:
+                lang = field._getCurrentLanguage(self)
+        lang_before = field._v_lang
+        field.setLanguage(lang)
+        image = None
+        if scale:
+            if scale in field.getAvailableSizes(self):
+                image = field.getScale(self, scale=scale)
+        else:
+            image = field.getScale(self)
+        field.setLanguage(lang_before)
         if image is not None and not isinstance(image, basestring):
             # image might be None or '' for empty images
             return image

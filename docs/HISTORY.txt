@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.0b16 (Unreleased)
+-------------------
+
+* Fixed TinyMCE issue where the wysiwyg editor was not displayed if no content was previously stored
+* Adjusted image scale traversal patches to make caching language aware
+
 1.0b15 (2011-09-09)
 -------------------
 
