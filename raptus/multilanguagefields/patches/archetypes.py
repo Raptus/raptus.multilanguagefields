@@ -25,10 +25,7 @@ def _redirect(context, REQUEST=None, RESPONSE=None):
             url += urlparse(url).query and '&' or '?'
             url += 'lang='+field._getCurrentLanguage(context)
             return REQUEST.response.redirect(url)
-        field.setLanguage(REQUEST['lang'])
     result = context.__old__index_html(REQUEST, RESPONSE)
-    if IMultilanguageField.providedBy(field):
-        field.resetLanguage()
     return result
 
 ATCTFileContent.__old__index_html = ATCTFileContent.index_html

@@ -146,6 +146,8 @@ class MultilanguageFieldMixin(Base):
             value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
         else:
             if not kwargs.has_key('lang'):
+                if hasattr(instance, 'REQUEST') and instance.REQUEST.get('lang', None):
+                    kwargs['lang'] = instance.REQUEST.get('lang', None)
                 kwargs['lang'] = self._getCurrentLanguage(instance)
             if kwargs['lang'] == 'all':
                 return self.getAll(instance, **kwargs)
@@ -156,7 +158,7 @@ class MultilanguageFieldMixin(Base):
             value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
             if not value and not kwargs.get('raw', False):
                 defaultLang = self.getDefaultLang(instance)
-                if defaultLang:
+                if defaultLang and not defaultLang == self._v_lang:
                     self.setLanguage(defaultLang)
                     value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
             self.resetLanguage()
@@ -168,12 +170,14 @@ class MultilanguageFieldMixin(Base):
             value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
         else:
             if not kwargs.has_key('lang'):
+                if hasattr(instance, 'REQUEST') and instance.REQUEST.get('lang', None):
+                    kwargs['lang'] = instance.REQUEST.get('lang', None)
                 kwargs['lang'] = self._getCurrentLanguage(instance)
             self.setLanguage(kwargs['lang'])
             value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
             if not value:
                 defaultLang = self.getDefaultLang(instance)
-                if defaultLang:
+                if defaultLang and not defaultLang == self._v_lang:
                     self.setLanguage(defaultLang)
                     value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
             self.resetLanguage()

@@ -1,9 +1,10 @@
 Changelog
 =========
 
-1.0b16 (Unreleased)
+1.0b16 (2011-09-22)
 -------------------
 
+* Fixed image and file caching patch to support language fallback
 * Fixed TinyMCE issue where the wysiwyg editor was not displayed if no content was previously stored
 * Adjusted image scale traversal patches to make caching language aware
 
