@@ -13,26 +13,28 @@ from Products.ATContentTypes.content.file import ATCTFileContent
 from raptus.multilanguagefields.interfaces import IMultilanguageField
 from raptus.multilanguagefields import LOG
 
+try:
+    from plone.app.blob.interfaces import IBlobField
+except ImportError:
+    from zope.interface import Interface
+    class IBlobField(Interface):
+        """"""
+
 # ATCTFileContent index_html monkey patch to make caching language aware
-
-def _redirect(context, REQUEST=None, RESPONSE=None):
-    field = context.getPrimaryField()
-    if IMultilanguageField.providedBy(field):
-        if REQUEST is None and hasattr(context, 'REQUEST'):
-            REQUEST = context.REQUEST
-        if REQUEST is not None and not 'lang' in REQUEST.keys():
-            url = REQUEST['ACTUAL_URL']
-            url += urlparse(url).query and '&' or '?'
-            url += 'lang='+field._getCurrentLanguage(context)
-            return REQUEST.response.redirect(url)
-    result = context.__old__index_html(REQUEST, RESPONSE)
-    return result
-
 ATCTFileContent.__old__index_html = ATCTFileContent.index_html
 def __new__index_html(self, REQUEST=None, RESPONSE=None):
     """Make it directly viewable when entering the objects URL
     """
-    return _redirect(self, REQUEST, RESPONSE)
+    field = self.getPrimaryField()
+    if not IBlobField.providedBy(field) and IMultilanguageField.providedBy(field):
+        if REQUEST is None and hasattr(self, 'REQUEST'):
+            REQUEST = self.REQUEST
+        if REQUEST is not None and not 'lang' in REQUEST.keys():
+            url = REQUEST['ACTUAL_URL']
+            url += urlparse(url).query and '&' or '?'
+            url += 'lang='+field._getCurrentLanguage(self)
+            return REQUEST.response.redirect(url)
+    return self.__old__index_html(REQUEST, RESPONSE)
 ATCTFileContent.index_html = __new__index_html
 LOG.info("Products.ATContentTypes.content.base.ATCTFileContent.index_html patched")
 

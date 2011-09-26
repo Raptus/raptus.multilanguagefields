@@ -11,7 +11,7 @@ def __bobo_traverse__(self, REQUEST, name):
        
        NO BLOBS
     """
-    if name.startswith('image'):
+    if name.startswith('image_') or name == 'image':
         field = self.getField('image')
         if not IMultilanguageField.providedBy(field):
             return BaseObject.__bobo_traverse__(self, REQUEST, name)
@@ -24,7 +24,7 @@ def __bobo_traverse__(self, REQUEST, name):
             if '_' in name:
                 fieldname, scale = name.split('_', 1)
             if REQUEST.get('HTTP_USER_AGENT', False):
-                return REQUEST.RESPONSE.redirect(self.absolute_url+'/'+fieldname+'___'+field._getCurrentLanguage(self)+'____'+str(scale))
+                return REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+field._getCurrentLanguage(self)+'____'+str(scale))
             else:
                 lang = field._getCurrentLanguage(self)
         lang_before = field._v_lang
