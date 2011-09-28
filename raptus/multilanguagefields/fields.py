@@ -144,6 +144,16 @@ class MultilanguageFieldMixin(Base):
         if value is not a dict, set the value for the current language
         """
         reset = True
+        if kwargs.get('_initializing_', False) and not isinstance(value, dict) and isinstance(self, TextField):
+            try:
+                languages = self._getTool(instance).listSupportedLanguages()
+            except AttributeError:
+                return
+            new_value = {}
+            for lang, name in languages:
+                if not self._getLangFromStorage(instance, lang):
+                    new_value[lang] = value
+            value = new_value
         if not value and kwargs.get('_initializing_', False):
             return
         if not isinstance(value, dict):
