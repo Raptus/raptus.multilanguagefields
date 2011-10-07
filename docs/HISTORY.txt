@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.0b18 (unreleased)
+-------------------
+
+* Plone 4.1 compatibility.
+  [thomasdesvenain]
+
 1.0b17 (2011-09-28)
 -------------------
 
@@ -94,7 +100,7 @@ Changelog
 ------------------
 * fixed catalog patch. The catalog can't store proxy-class, so we need to
   parse the multi value to a string. This problem was only on plone4.0
-  
+
 * fixed error by creating new contenttypes. this error was provided by the get
   method of ImageFields.
 
@@ -163,7 +169,7 @@ Changelog
   - put MultiLanguageAware in a separate file (proxy.py)
 
 * Added samples types and specific profile for tests
-* Added doctests on multilingual fields and catalog search 
+* Added doctests on multilingual fields and catalog search
 * fix http://plone.org/products/raptus.multilanguagefields/issues/2
   translate a rich widget without kupu
 * The MultilanguageFieldMixin must inherit from Products.Archetypes.Field.ObjectField
