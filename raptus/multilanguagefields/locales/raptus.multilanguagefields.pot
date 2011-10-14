@@ -1,0 +1,48 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2011-10-14 18:06+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: raptus.multilanguagefields\n"
+
+#: ../fields.py:105
+msgid "default language"
+msgstr ""
+
+#. Default: "${name} is required, please provide at least the default language."
+#: ../fields.py:279
+msgid "error_required_default"
+msgstr ""
+
+#. Default: "All languages"
+#: ../skins/multilanguagefields/translator.pt:9
+msgid "label_all"
+msgstr ""
+
+#. Default: "translate"
+#: ../skins/multilanguagefields/translator.pt:15
+msgid "label_translate"
+msgstr ""
+
+#. Default: "Translate into"
+#: ../skins/multilanguagefields/translator.pt:3
+msgid "label_translate_into"
+msgstr ""
+
+#. Default: "Are you sure you want to replace the current value for the language \"{language}\" by the generated translation \"{translation}\"?"
+#: ../browser.py:50
+msgid "message_translate"
+msgstr ""
+

@@ -4,6 +4,10 @@ Changelog
 1.0b18 (unreleased)
 -------------------
 
+* Use Plone 4+ translation files system.
+  (Translations now work under Plone 4)
+  [thomasdesvenain]
+
 * Plone 4.1 compatibility.
   [thomasdesvenain]
 

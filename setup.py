@@ -1,4 +1,5 @@
 import os
+import sys
 from setuptools import setup, find_packages
 
 def read(*rnames):
@@ -9,10 +10,15 @@ from xml.dom import minidom
 metadata_file = os.path.join(os.path.dirname(__file__),
                              'raptus', 'multilanguagefields',
                              'profiles', 'default', 'metadata.xml')
-                             
+
 metadata = minidom.parse(metadata_file)
 version = metadata.getElementsByTagName("version")[0].childNodes[0].nodeValue
 version = str(version).strip()
+
+if sys.version_info[0] == 2 and sys.version_info[1] < 6:
+    requires = ['simplejson']
+else:
+    requires = []
 
 setup(name='raptus.multilanguagefields',
       version=version,
@@ -36,9 +42,8 @@ setup(name='raptus.multilanguagefields',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'simplejson',
           # -*- Extra requirements: -*-
-      ],
+      ] + requires,
       entry_points="""
       # -*- Entry points: -*-
       """,

@@ -34,7 +34,7 @@ msgstr "Êtes-vous sûr de vouloir remplacer la valeur actuelle de la langue \"{
 
 #. Default: "${name} is required, please provide at least the default language."
 msgid "error_required_default"
-msgstr "${name} est obligatoire, veuillez entréz au minimum la langue générale."
+msgstr "${name} est obligatoire, veuillez entrer au minimum la langue générale."
 
 msgid "default language"
-msgstr "langue générale"
+msgstr "langue principale"

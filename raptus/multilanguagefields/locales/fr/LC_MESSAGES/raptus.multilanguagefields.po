@@ -1,0 +1,45 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2011-10-14 18:06+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: Thomas Desvenain <thomas.desvenain@gmail.com>\n"
+"Language-Team: LANGUAGE <thomas.desvenain@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: fr\n"
+"Language-Name: French\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: raptus.multilanguagefields\n"
+
+#: ../fields.py:105
+msgid "default language"
+msgstr "langue principale"
+
+#. Default: "${name} is required, please provide at least the default language."
+#: ../fields.py:279
+msgid "error_required_default"
+msgstr "${name} est obligatoire, veuillez entrer au minimum la langue principale."
+
+#. Default: "All languages"
+#: ../skins/multilanguagefields/translator.pt:9
+msgid "label_all"
+msgstr "Toutes les langues"
+
+#. Default: "translate"
+#: ../skins/multilanguagefields/translator.pt:15
+msgid "label_translate"
+msgstr "traduire"
+
+#. Default: "Translate into"
+#: ../skins/multilanguagefields/translator.pt:3
+msgid "label_translate_into"
+msgstr "Traduire en"
+
+#. Default: "Are you sure you want to replace the current value for the language \"{language}\" by the generated translation \"{translation}\"?"
+#: ../browser.py:50
+msgid "message_translate"
+msgstr "Êtes-vous sûr(e) de vouloir remplacer la valeur actuelle pour la langue \"{language}\" par la traduction générée \"{translation}\" ?"
+
