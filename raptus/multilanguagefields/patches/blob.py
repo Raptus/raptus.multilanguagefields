@@ -51,7 +51,7 @@ try:
             if '_' in name:
                 fieldname, scale = name.split('_', 1)
             if REQUEST.get('HTTP_USER_AGENT', False):
-                return REQUEST.RESPONSE.redirect(self.absolute_url+'/'+fieldname+'___'+field._getCurrentLanguage(self)+'____'+str(scale))
+                return REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+field._getCurrentLanguage(self)+'____'+str(scale))
             else:
                 lang = field._getCurrentLanguage(self)
         lang_before = field._v_lang

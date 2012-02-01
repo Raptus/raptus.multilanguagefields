@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.1a1 (Unreleased)
+------------------
+
+* Fixed redirection in blob images __bobo_traverse__
+
 1.0 (2012-01-23)
 ----------------
 
