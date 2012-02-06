@@ -15,6 +15,7 @@ def __bobo_traverse__(self, REQUEST, name):
         field = self.getField('image')
         if not IMultilanguageField.providedBy(field):
             return BaseObject.__bobo_traverse__(self, REQUEST, name)
+        last = REQUEST.get('ACTUAL_URL', '').endswith(name)
         fieldname, scale = name, None
         if '___' in name:
             fieldname, lang, scalename = name.split('___')
@@ -23,10 +24,9 @@ def __bobo_traverse__(self, REQUEST, name):
         else:
             if '_' in name:
                 fieldname, scale = name.split('_', 1)
-            if REQUEST.get('HTTP_USER_AGENT', False):
-                return REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+field._getCurrentLanguage(self)+'____'+str(scale))
-            else:
-                lang = field._getCurrentLanguage(self)
+            if last and REQUEST.get('HTTP_USER_AGENT', False):
+                REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+field._getCurrentLanguage(self)+'___'+('_'+str(scale) if scale is not None else ''))
+            lang = field._getCurrentLanguage(self)
         lang_before = field._v_lang
         field.setLanguage(lang)
         image = None
