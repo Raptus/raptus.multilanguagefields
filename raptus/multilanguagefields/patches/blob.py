@@ -40,7 +40,7 @@ try:
             the method to be patched is '__bobo_traverse__'
         """
         field = self.getField(name.split('_')[0])
-        if not IMultilanguageField.providedBy(field) or not isinstance(REQUEST, dict):
+        if not IMultilanguageField.providedBy(field) or not hasattr(REQUEST, 'get'):
             return BaseObject.__bobo_traverse__(self, REQUEST, name)
         last = REQUEST.get('ACTUAL_URL', '').endswith(name)
         fieldname, scale = name, None
@@ -59,7 +59,19 @@ try:
         handler = IImageScaleHandler(field, None)
         image = None
         if handler is not None:
-            image = handler.getScale(self, scale)
+            try:
+                image = handler.getScale(self, scale)
+            except AttributeError: # no image available, do not raise as there might be one available as a fallback
+                pass
+        if not image: # language fallback
+            defaultLang = field.getDefaultLang(self)
+            if defaultLang and not defaultLang == lang:
+                field.setLanguage(defaultLang)
+                if handler is not None:
+                    image = handler.getScale(self, scale)
+            if image is not None:
+                if last and REQUEST.get('HTTP_USER_AGENT', False):
+                    REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+defaultLang+'___'+('_'+str(scale) if scale is not None else ''))
         field.setLanguage(lang_before)
         if image is not None:
             return image

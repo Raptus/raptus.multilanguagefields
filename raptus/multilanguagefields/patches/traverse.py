@@ -35,6 +35,18 @@ def __bobo_traverse__(self, REQUEST, name):
                 image = field.getScale(self, scale=scale)
         else:
             image = field.getScale(self)
+        if not image: # language fallback
+            defaultLang = field.getDefaultLang(self)
+            if defaultLang and not defaultLang == lang:
+                field.setLanguage(defaultLang)
+                if scale:
+                    if scale in field.getAvailableSizes(self):
+                        image = field.getScale(self, scale=scale)
+                else:
+                    image = field.getScale(self)
+            if image is not None:
+                if last and REQUEST.get('HTTP_USER_AGENT', False):
+                    REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+defaultLang+'___'+('_'+str(scale) if scale is not None else ''))
         field.setLanguage(lang_before)
         if image is not None and not isinstance(image, basestring):
             # image might be None or '' for empty images
