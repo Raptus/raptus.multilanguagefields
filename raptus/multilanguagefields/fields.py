@@ -199,7 +199,7 @@ class MultilanguageFieldMixin(Base):
             if kwargs['lang'] == 'original' and self.getDefault(instance):
                 kwargs['_initializing_'] = True
             value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
-            if not value and (not kwargs.get('raw', False) or is_blob(self)):
+            if not value:
                 defaultLang = self.getDefaultLang(instance)
                 if defaultLang and not defaultLang == self._v_lang:
                     try: # close possible open empty blob
@@ -223,8 +223,11 @@ class MultilanguageFieldMixin(Base):
             if not value:
                 defaultLang = self.getDefaultLang(instance)
                 if defaultLang and not defaultLang == self._v_lang:
-                    if is_blob(value) and value.blob.opened(): # close possible open empty blob
-                        value.blob._p_invalidate()
+                    try: # close possible open empty blob
+                        if is_blob(self) and value.blob.opened():
+                            value.blob._p_invalidate()
+                    except:
+                        pass
                     self.setLanguage(defaultLang)
                     value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
             self.resetLanguage()

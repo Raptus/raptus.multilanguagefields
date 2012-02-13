@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.1a2 (2012-02-13)
+------------------
+
+* Fixed fallback issue for non blob file and image fields
+
 1.1a1 (2012-02-06)
 ------------------
 
