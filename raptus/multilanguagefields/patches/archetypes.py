@@ -38,6 +38,33 @@ def __new__index_html(self, REQUEST=None, RESPONSE=None):
 ATCTFileContent.index_html = __new__index_html
 LOG.info("Products.ATContentTypes.content.base.ATCTFileContent.index_html patched")
 
+# Archetypes ATCTFileContent post_validate monkey patch to prevent
+# CopyError when adding a file or image with a filename which already
+# exists in the folder
+ATCTFileContent.__old__post_validate = ATCTFileContent.post_validate
+def __new__post_validate(self, REQUEST=None, errors=None):
+    """Validates upload file and id
+    """
+    field  = self.getPrimaryField()
+    if IMultilanguageField.providedBy(field):
+        lang = field._v_lang
+        field.setLanguage(field.getDefaultLang(self))
+        REQUEST.form['%s_file' % field.__name__] = REQUEST.form.get('%s_file' % field.getName())
+        field.resetLanguage()
+        if lang is not None:
+            field.setLanguage(lang)
+    title = self.Schema()['title']
+    if IMultilanguageField.providedBy(title):
+        lang = title._v_lang
+        title.setLanguage(title.getDefaultLang(self))
+        REQUEST.form[title.__name__] = REQUEST.form.get(title.getName())
+        title.resetLanguage()
+        if lang is not None:
+            title.setLanguage(lang)
+    self.__old__post_validate(REQUEST, errors)
+ATCTFileContent.post_validate = __new__post_validate
+LOG.info("Products.ATContentTypes.content.base.ATCTFileContent.post_validate patched")
+
 # BaseObject SearchableText monkey patch to support languageaware searches
 BaseObject.BaseObject.__old_SearchableText = BaseObject.BaseObject.SearchableText 
 def __new_SearchableText(self, lang=None):
@@ -281,7 +308,7 @@ def __new__cleanup(self, name, instance, value, **kwargs):
     if shasattr(instance, name) and not callable(getattr(instance, name)):
         delattr(instance, name)
 annotation.AnnotationStorage._cleanup = __new__cleanup
-LOG.info("Products.Archetypes.Storage.annotation.AnnotationStorage._cleanup patched") 
+LOG.info("Products.Archetypes.Storage.annotation.AnnotationStorage._cleanup patched")
 
 # ATContentTypes criteria monkey patch
 # something todo here ?

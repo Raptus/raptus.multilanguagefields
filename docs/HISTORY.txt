@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.1a4 (Unreleased)
+------------------
+
+* Fixed post validation of ATCTFileContent to prevent unhandled CopyError
+  when adding a file to a folder where an object with the same ID already exists
+
 1.1a3 (2012-02-13)
 ------------------
 
