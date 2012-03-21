@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1a4 (Unreleased)
+1.1a4 (2012-03-21)
 ------------------
 
 * Fixed post validation of ATCTFileContent to prevent unhandled CopyError
