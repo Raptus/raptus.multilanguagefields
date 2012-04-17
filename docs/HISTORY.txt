@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.1a5 (2012-04-17)
+------------------
+
+* Restored translation functionality by using the free web service of
+  http://mymemory.translated.net
+* Added helper javascript file (multilanguage_tiny_mce_init.js) setting
+  the text format to text/html and hiding it for multilanguage TinyMCE
+  fields
+
 1.1a4 (2012-03-21)
 ------------------
 

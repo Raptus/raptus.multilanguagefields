@@ -1,4 +1,6 @@
 <?xml version="1.0"?>
 <object name="portal_javascripts" meta_type="JavaScripts Registry">
  <javascript id="translator.js" remove="True"/>
+ <javascript id="validation_helper.js" remove="True"/>
+ <javascript id="multilanguage_tiny_mce_init.js" remove="True"/>
 </object>

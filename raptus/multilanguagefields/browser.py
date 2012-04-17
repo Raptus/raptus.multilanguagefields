@@ -32,14 +32,13 @@ def decode_htmlentities(string):
     return entity_re.subn(substitute_entity, string)[0]
 
 class Translation(BrowserView):
-    
+
     def getRawTranslation(self, string, source, dest):
-        url = 'http://ajax.googleapis.com/ajax/services/language/translate'
-        params = {'v': '1.0',
-                  'q': string,
+        url = 'http://mymemory.translated.net/api/get'
+        params = {'q': string,
                   'langpair': '%s|%s' % (source[:2], dest[:2])}
         return urllib.urlopen(url, urllib.urlencode(params)).read()
-    
+
     def getTranslation(self, string, source, dest, id=0):
         result = json.loads(self.getRawTranslation(string, source, dest).decode('utf-8'));
         result[u'responseData'][u'translatedText'] = decode_htmlentities(result[u'responseData'][u'translatedText'])
