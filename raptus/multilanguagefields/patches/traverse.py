@@ -25,7 +25,11 @@ def __bobo_traverse__(self, REQUEST, name):
             if '_' in name:
                 fieldname, scale = name.split('_', 1)
             if last and REQUEST.get('HTTP_USER_AGENT', False):
-                REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+field._getCurrentLanguage(self)+'___'+('_'+str(scale) if scale is not None else ''))
+                if scale is not None:
+                    scale = '_'+str(scale)
+                else:
+                    scale = ''
+                REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+field._getCurrentLanguage(self)+'___'+scale)
             lang = field._getCurrentLanguage(self)
         lang_before = field._v_lang
         field.setLanguage(lang)
@@ -46,7 +50,11 @@ def __bobo_traverse__(self, REQUEST, name):
                     image = field.getScale(self)
             if image is not None:
                 if last and REQUEST.get('HTTP_USER_AGENT', False):
-                    REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+defaultLang+'___'+('_'+str(scale) if scale is not None else ''))
+                    if scale is not None:
+                        scale = str(scale)
+                    else:
+                        scale = ''
+                    REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+defaultLang+'___'+scale)
         field.setLanguage(lang_before)
         if image is not None and not isinstance(image, basestring):
             # image might be None or '' for empty images

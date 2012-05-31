@@ -4,10 +4,8 @@ from Acquisition import aq_get
 
 from zope.interface import implements
 from zope.component import queryMultiAdapter
-from zope.app.component.hooks import getSite
 from zope.i18n import translate
 from zope.i18nmessageid import Message
-from zope.site.hooks import getSite
 
 from Products.Archetypes.ClassGen import Generator, ClassGenerator
 from Products.Archetypes.utils import shasattr
@@ -23,6 +21,11 @@ from Products.Archetypes.Layer import DefaultLayerContainer
 
 from raptus.multilanguagefields import multilanguagefieldsMessageFactory as _
 from raptus.multilanguagefields.interfaces import IMultilanguageField
+
+try:
+    from zope.site.hooks import getSite
+except ImportError: # Plone < 4
+    from zope.app.component.hooks import getSite
 
 def is_blob(obj):
     return False

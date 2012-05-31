@@ -4,6 +4,7 @@ Changelog
 1.1a6 (2012-05-31)
 ------------------
 
+* Python 2.4 & Plone 3 compatibility
 * Fixed import in migrate.py
 
 1.1a5 (2012-04-17)
