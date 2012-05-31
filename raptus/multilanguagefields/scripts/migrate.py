@@ -34,13 +34,17 @@ your zope and your plone content should be back in place.
 import sys
 import transaction
 from Testing.makerequest import makerequest
-from zope.app import publication
 from zope.app.component import site
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from raptus.multilanguagefields.interfaces import IMultilanguageField
 
+try:
+    from zope.traversing.interfaces import BeforeTraverseEvent
+except ImportError: # plone < 4
+    from zope.app.publication.interfaces import BeforeTraverseEvent
+
 def setSiteManager(plone):
-    ev = publication.interfaces.BeforeTraverseEvent(plone, plone.REQUEST)
+    ev = BeforeTraverseEvent(plone, plone.REQUEST)
     site.threadSiteSubscriber(plone, ev)
 
 def migrate(path):
