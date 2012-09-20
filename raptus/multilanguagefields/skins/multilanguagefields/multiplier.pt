@@ -31,7 +31,7 @@
               tal:condition="translate">Language</dt>
           <dd tal:attributes="id string:fieldset-${fName}-${lang/name}"
               tal:omit-tag="not: translate">
-            <div metal:use-macro="python: path('here/widgets/%s/macros/edit' % widget_name)" />
+            <div metal:use-macro="python: path('widget_macro|here/widgets/%s/macros/edit' % widget_name)" />
           </dd>
           </tal:def>
           </tal:lang>
