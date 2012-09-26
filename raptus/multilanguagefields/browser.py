@@ -1,4 +1,5 @@
 import urllib
+import urllib2
 import re
 try:
     import json
@@ -35,9 +36,12 @@ class Translation(BrowserView):
 
     def getRawTranslation(self, string, source, dest):
         url = 'http://mymemory.translated.net/api/get'
-        params = {'q': string,
-                  'langpair': '%s|%s' % (source[:2], dest[:2])}
-        return urllib.urlopen(url, urllib.urlencode(params)).read()
+        params = urllib.urlencode({'q': string,
+                                   'langpair': '%s|%s' % (source[:2], dest[:2])})
+        header = {'User-Agent': 'Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11'}
+        
+        req  = urllib2.Request(u'%s?%s' % (url, params), None, header)
+        return urllib2.urlopen(req).read()
 
     def getTranslation(self, string, source, dest, id=0):
         result = json.loads(self.getRawTranslation(string, source, dest).decode('utf-8'));
