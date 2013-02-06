@@ -13,16 +13,15 @@ msgstr ""
 "Language-Name: German\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: raptus.multilanguagefields\n"
-"X-Generator: Poedit 1.5.4\n"
 
 #: ../fields.py:105
 msgid "default language"
-msgstr "Standard Sprache"
+msgstr "Hauptsprache"
 
 #. Default: "${name} is required, please provide at least the default language."
 #: ../fields.py:279
 msgid "error_required_default"
-msgstr "${name} ist zwingend, bitte wenisgtens die Standardsprache eingeben."
+msgstr "${name} erfordert eine Eingabe, bitte geben Sie mindestens die Hauptsprache an."
 
 #. Default: "All languages"
 #: ../skins/multilanguagefields/translator.pt:9
@@ -37,11 +36,9 @@ msgstr "übersetzen"
 #. Default: "Translate into"
 #: ../skins/multilanguagefields/translator.pt:3
 msgid "label_translate_into"
-msgstr "übersetzen in"
+msgstr "Übersetzen in"
 
 #. Default: "Are you sure you want to replace the current value for the language \"{language}\" by the generated translation \"{translation}\"?"
 #: ../browser.py:50
 msgid "message_translate"
-msgstr ""
-"Sind Sie sicher, dass Sie den aktuellen Wert der Sprache\"{language}\" für "
-"die generierte Übersetzung\"{translation}\" ändern wollen ?"
+msgstr "Sind Sie sicher, dass Sie den momentanen Wert der Sprache \"{language}\" durch die generierte Übersetzung \"{translation}\" ersetzen wollen?"

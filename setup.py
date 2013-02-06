@@ -2,18 +2,11 @@ import os
 import sys
 from setuptools import setup, find_packages
 
+
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-from xml.dom import minidom
-
-metadata_file = os.path.join(os.path.dirname(__file__),
-                             'raptus', 'multilanguagefields',
-                             'profiles', 'default', 'metadata.xml')
-
-metadata = minidom.parse(metadata_file)
-version = metadata.getElementsByTagName("version")[0].childNodes[0].nodeValue
-version = str(version).strip()
+version = '1.1b1'
 
 if sys.version_info[0] == 2 and sys.version_info[1] < 6:
     requires = ['simplejson']
