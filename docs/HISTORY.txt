@@ -1,6 +1,8 @@
 Changelog
 =========
 
+* German translation
+
 1.1a7 (2012-09-26)
 ------------------
 
