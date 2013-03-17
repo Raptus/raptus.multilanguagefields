@@ -405,7 +405,7 @@ try:
                 url += urlparse(url).query and '&' or '?'
                 url += 'lang='+self._getCurrentLanguage(instance)
                 return REQUEST.response.redirect(url)
-            return super(MultilanguageBlobFieldMixin, self).index_html(instance, REQUEST, RESPONSE, disposition)
+            return super(MultilanguageBlobFieldMixin, self).index_html(instance, REQUEST=REQUEST, RESPONSE=RESPONSE, disposition=disposition)
     
     class BlobFileField(MultilanguageFieldMixin, MultilanguageBlobFieldMixin, BaseBlobFileField):
         _properties = BaseBlobFileField._properties.copy()
