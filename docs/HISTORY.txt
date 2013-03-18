@@ -1,10 +1,10 @@
 Changelog
 =========
 
-1.1b2 (unreleased)
+1.1b2 (2013-03-18)
 ------------------
 
-- Nothing changed yet.
+* Fixed wrong call to index_html into blobfields [jnachtigall]
 
 
 1.1b1 (2013-02-06)
