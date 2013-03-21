@@ -7,7 +7,7 @@ try:
     from plone.app.blob.content import ATBlob
     from Products.Archetypes.BaseObject import BaseObject
     from Products.ATContentTypes.content.file import ATFile
-    
+
     from raptus.multilanguagefields.interfaces import IMultilanguageField
 
     def setImage(self, value, **kw):
@@ -35,8 +35,8 @@ try:
 
     def __blob__bobo_traverse__(self, REQUEST, name):
         """ helper to access multilanguage image scales the old way during
-            `unrestrictedTraverse` calls 
-            
+            `unrestrictedTraverse` calls
+
             the method to be patched is '__bobo_traverse__'
         """
         field = self.getField(name.split('_')[0])
@@ -52,11 +52,12 @@ try:
             if '_' in name:
                 fieldname, scale = name.split('_', 1)
             if last and REQUEST.get('HTTP_USER_AGENT', False):
-                if scale is not None:
-                    scale = str(scale)
+                _scale = scale
+                if _scale is not None:
+                    _scale = '_'+str(_scale)
                 else:
-                    scale = ''
-                REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+field._getCurrentLanguage(self)+'___'+scale)
+                    _scale = ''
+                REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+field._getCurrentLanguage(self)+'___'+_scale)
             lang = field._getCurrentLanguage(self)
         lang_before = field._v_lang
         field.setLanguage(lang)
@@ -75,11 +76,12 @@ try:
                     image = handler.getScale(self, scale)
             if image is not None:
                 if last and REQUEST.get('HTTP_USER_AGENT', False):
-                    if scale is not None:
-                        scale = str(scale)
+                    _scale = scale
+                    if _scale is not None:
+                        _scale = '_'+str(_scale)
                     else:
-                        scale = ''
-                    REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+defaultLang+'___'+scale)
+                        _scale = ''
+                    REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+defaultLang+'___'+_scale)
         field.setLanguage(lang_before)
         if image is not None:
             return image
