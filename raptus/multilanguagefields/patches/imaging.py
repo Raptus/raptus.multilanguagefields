@@ -24,11 +24,13 @@ try:
         if lang is not None:
             lang_before, lang_set = field._v_lang, 1
             field.setLanguage(lang)
-        handler = IImageScaleHandler(field, None)
-        if handler is not None:
-            image = handler.getScale(self.context, scale)
-        if lang_set:
-            field.setLanguage(lang_before)
+        try:
+            handler = IImageScaleHandler(field, None)
+            if handler is not None:
+                image = handler.getScale(self.context, scale)
+        finally:
+            if lang_set:
+                field.setLanguage(lang_before)
         if image is not None:
             return image
         return self.fallback(request, name)

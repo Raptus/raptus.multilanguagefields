@@ -159,19 +159,21 @@ class MultilanguageFieldMixin(Base):
             value = new_value
         if not value and kwargs.get('_initializing_', False):
             return
-        if not isinstance(value, dict):
-            if self._v_lang:
-                reset = False
-                value = {self._v_lang: value}
-            else:
-                value = {self._getCurrentLanguage(instance): value}
-        for lang, val in value.items():
-            self.setLanguage(lang)
-            kw = kwargs.copy()
-            kw.update(kwargs.get(lang, {}))
-            super(MultilanguageFieldMixin, self).set(instance, val, **kw)
-        if reset:
-            self.resetLanguage()
+        try:
+            if not isinstance(value, dict):
+                if self._v_lang:
+                    reset = False
+                    value = {self._v_lang: value}
+                else:
+                    value = {self._getCurrentLanguage(instance): value}
+            for lang, val in value.items():
+                self.setLanguage(lang)
+                kw = kwargs.copy()
+                kw.update(kwargs.get(lang, {}))
+                super(MultilanguageFieldMixin, self).set(instance, val, **kw)
+        finally:
+            if reset:
+                self.resetLanguage()
         if not hasattr(instance, self.getName()):
             generator = Generator()
             classgenerator = ClassGenerator()
@@ -197,22 +199,24 @@ class MultilanguageFieldMixin(Base):
             kwargs['lang'] = self._get_lang(instance, **kwargs)
             if kwargs['lang'] == 'all':
                 return self.getAll(instance, **kwargs)
-            self.setLanguage(kwargs['lang'])
-            # prevent overriding of default language when getting the original one
-            if kwargs['lang'] == 'original' and self.getDefault(instance):
-                kwargs['_initializing_'] = True
-            value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
-            if not value:
-                defaultLang = self.getDefaultLang(instance)
-                if defaultLang and not defaultLang == self._v_lang:
-                    try: # close possible open empty blob
-                        if is_blob(self) and value.blob.opened():
-                            value.blob._p_invalidate()
-                    except:
-                        pass
-                    self.setLanguage(defaultLang)
-                    value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
-            self.resetLanguage()
+            try:
+                self.setLanguage(kwargs['lang'])
+                # prevent overriding of default language when getting the original one
+                if kwargs['lang'] == 'original' and self.getDefault(instance):
+                    kwargs['_initializing_'] = True
+                value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
+                if not value:
+                    defaultLang = self.getDefaultLang(instance)
+                    if defaultLang and not defaultLang == self._v_lang:
+                        try: # close possible open empty blob
+                            if is_blob(self) and value.blob.opened():
+                                value.blob._p_invalidate()
+                        except:
+                            pass
+                        self.setLanguage(defaultLang)
+                        value = super(MultilanguageFieldMixin, self).get(instance, **kwargs)
+            finally:
+                self.resetLanguage()
         return value
 
     security.declarePrivate('getRaw')
@@ -221,19 +225,21 @@ class MultilanguageFieldMixin(Base):
             value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
         else:
             kwargs['lang'] = self._get_lang(instance, **kwargs)
-            self.setLanguage(kwargs['lang'])
-            value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
-            if not value:
-                defaultLang = self.getDefaultLang(instance)
-                if defaultLang and not defaultLang == self._v_lang:
-                    try: # close possible open empty blob
-                        if is_blob(self) and value.blob.opened():
-                            value.blob._p_invalidate()
-                    except:
-                        pass
-                    self.setLanguage(defaultLang)
-                    value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
-            self.resetLanguage()
+            try:
+                self.setLanguage(kwargs['lang'])
+                value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
+                if not value:
+                    defaultLang = self.getDefaultLang(instance)
+                    if defaultLang and not defaultLang == self._v_lang:
+                        try: # close possible open empty blob
+                            if is_blob(self) and value.blob.opened():
+                                value.blob._p_invalidate()
+                        except:
+                            pass
+                        self.setLanguage(defaultLang)
+                        value = super(MultilanguageFieldMixin, self).getRaw(instance, **kwargs)
+            finally:
+                self.resetLanguage()
         return value
     
     security.declarePrivate('getAll')
@@ -255,9 +261,11 @@ class MultilanguageFieldMixin(Base):
         else:
             for lang, val in value.items():
                 val = val or value.get(defaultLang, 0)
-                self.setLanguage(lang)
-                res = super(MultilanguageFieldMixin, self).validate(val, instance, errors, **kwargs)
-                self.resetLanguage()
+                try:
+                    self.setLanguage(lang)
+                    res = super(MultilanguageFieldMixin, self).validate(val, instance, errors, **kwargs)
+                finally:
+                    self.resetLanguage()
                 # return the first error if langFallback is deactivated
                 if res is not None and defaultLang is None:
                     if request.form.get('form.button.save', False):
@@ -356,15 +364,17 @@ class ImageField(MultilanguageFieldMixin, fields.ImageField):
             return super(ImageField, self).getScale(instance, scale, **kwargs)
         if not kwargs.has_key('lang'):
             kwargs['lang'] = self._getCurrentLanguage(instance)
-        self.setLanguage(kwargs['lang'])
-        image = super(ImageField, self).getScale(instance, scale, **kwargs)
-        if not image or not image.get_size():
-            defaultLang = self.getDefaultLang(instance)
-            if defaultLang:
-                self.setLanguage(defaultLang)
-                image = super(MultilanguageFieldMixin, self).getScale(instance, scale, **kwargs)
-        self.resetLanguage()
-        return image
+        try:
+            self.setLanguage(kwargs['lang'])
+            image = super(ImageField, self).getScale(instance, scale, **kwargs)
+            if not image or not image.get_size():
+                defaultLang = self.getDefaultLang(instance)
+                if defaultLang:
+                    self.setLanguage(defaultLang)
+                    image = super(MultilanguageFieldMixin, self).getScale(instance, scale, **kwargs)
+            return image
+        finally:
+            self.resetLanguage()
 
     security.declareProtected(View, 'tag')
     def tag(self, instance, scale=None, height=None, width=None, alt=None,
@@ -375,15 +385,17 @@ class ImageField(MultilanguageFieldMixin, fields.ImageField):
             return super(ImageField, self).tag(instance, scale, height, width, alt, css_class, title, **kwargs)
         if not kwargs.has_key('lang'):
             kwargs['lang'] = self._getCurrentLanguage(instance)
-        self.setLanguage(kwargs['lang'])
-        value = self.get(instance, **kwargs)
-        if not value or not value.get_size():
-            defaultLang = self.getDefaultLang(instance)
-            if defaultLang:
-                self.setLanguage(defaultLang)
-        tag = super(ImageField, self).tag(instance, scale, height, width, alt, css_class, title, **kwargs)
-        self.resetLanguage()
-        return tag
+        try:
+            self.setLanguage(kwargs['lang'])
+            value = self.get(instance, **kwargs)
+            if not value or not value.get_size():
+                defaultLang = self.getDefaultLang(instance)
+                if defaultLang:
+                    self.setLanguage(defaultLang)
+            tag = super(ImageField, self).tag(instance, scale, height, width, alt, css_class, title, **kwargs)
+            return tag
+        finally:
+            self.resetLanguage()
     
 try:
     from urlparse import urlparse
@@ -398,14 +410,18 @@ try:
         security.declareProtected(View, 'index_html')
         def index_html(self, instance, REQUEST=None, RESPONSE=None, disposition='inline'):
             """ make it directly viewable when entering the objects URL """
-            if REQUEST is None and hasattr(instance, 'REQUEST'):
-                REQUEST = instance.REQUEST
-            if REQUEST is not None and not 'lang' in REQUEST.keys():
-                url = REQUEST['ACTUAL_URL']
-                url += urlparse(url).query and '&' or '?'
-                url += 'lang='+self._getCurrentLanguage(instance)
-                return REQUEST.response.redirect(url)
-            return super(MultilanguageBlobFieldMixin, self).index_html(instance, REQUEST=REQUEST, RESPONSE=RESPONSE, disposition=disposition)
+            try:
+                self.resetLanguage()
+                if REQUEST is None and hasattr(instance, 'REQUEST'):
+                    REQUEST = instance.REQUEST
+                if REQUEST is not None and not 'lang' in REQUEST.keys():
+                    url = REQUEST['ACTUAL_URL']
+                    url += urlparse(url).query and '&' or '?'
+                    url += 'lang='+self._getCurrentLanguage(instance)
+                    return REQUEST.response.redirect(url)
+                return super(MultilanguageBlobFieldMixin, self).index_html(instance, REQUEST=REQUEST, RESPONSE=RESPONSE, disposition=disposition)
+            finally:
+                self.resetLanguage()
     
     class BlobFileField(MultilanguageFieldMixin, MultilanguageBlobFieldMixin, BaseBlobFileField):
         _properties = BaseBlobFileField._properties.copy()
@@ -444,15 +460,17 @@ try:
                 return super(BlobImageField, self).tag(instance, scale, height, width, alt, css_class, title, **kwargs)
             if not kwargs.has_key('lang'):
                 kwargs['lang'] = self._getCurrentLanguage(instance)
-            self.setLanguage(kwargs['lang'])
-            value = self.get(instance, **kwargs)
-            if not value or not value.get_size():
-                defaultLang = self.getDefaultLang(instance)
-                if defaultLang:
-                    self.setLanguage(defaultLang)
-            tag = super(BlobImageField, self).tag(instance, scale, height, width, alt, css_class, title, **kwargs)
-            self.resetLanguage()
-            return tag
+            try:
+                self.setLanguage(kwargs['lang'])
+                value = self.get(instance, **kwargs)
+                if not value or not value.get_size():
+                    defaultLang = self.getDefaultLang(instance)
+                    if defaultLang:
+                        self.setLanguage(defaultLang)
+                tag = super(BlobImageField, self).tag(instance, scale, height, width, alt, css_class, title, **kwargs)
+                return tag
+            finally:
+                self.resetLanguage()
     
         security.declareProtected(View, 'getScale')
         def getScale(self, instance, scale=None, **kwargs):
@@ -461,15 +479,17 @@ try:
                 return super(BlobImageField, self).getScale(instance, scale, **kwargs)
             if not kwargs.has_key('lang'):
                 kwargs['lang'] = self._getCurrentLanguage(instance)
-            self.setLanguage(kwargs['lang'])
-            image = super(BlobImageField, self).getScale(instance, scale, **kwargs)
-            if not image or not image.get_size():
-                defaultLang = self.getDefaultLang(instance)
-                if defaultLang:
-                    self.setLanguage(defaultLang)
-                    image = super(BlobImageField, self).getScale(instance, scale, **kwargs)
-            self.resetLanguage()
-            return image
+            try:
+                self.setLanguage(kwargs['lang'])
+                image = super(BlobImageField, self).getScale(instance, scale, **kwargs)
+                if not image or not image.get_size():
+                    defaultLang = self.getDefaultLang(instance)
+                    if defaultLang:
+                        self.setLanguage(defaultLang)
+                        image = super(BlobImageField, self).getScale(instance, scale, **kwargs)
+                return image
+            finally:
+                self.resetLanguage()
 
     registerField(BlobFileField,
                   title='Multilanguage Blob File',

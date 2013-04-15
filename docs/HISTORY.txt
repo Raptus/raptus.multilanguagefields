@@ -4,7 +4,8 @@ Changelog
 1.1b4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+* Be way more defensive when setting and resetting languages on fields
+  (Added try/finally clauses accordingly) [skaeser]
 
 
 1.1b3 (2013-03-21)

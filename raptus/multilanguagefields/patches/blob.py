@@ -60,29 +60,31 @@ try:
                 REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+field._getCurrentLanguage(self)+'___'+_scale)
             lang = field._getCurrentLanguage(self)
         lang_before = field._v_lang
-        field.setLanguage(lang)
-        handler = IImageScaleHandler(field, None)
-        image = None
-        if handler is not None:
-            try:
-                image = handler.getScale(self, scale)
-            except AttributeError: # no image available, do not raise as there might be one available as a fallback
-                pass
-        if not image: # language fallback
-            defaultLang = field.getDefaultLang(self)
-            if defaultLang and not defaultLang == lang:
-                field.setLanguage(defaultLang)
-                if handler is not None:
+        try:
+            field.setLanguage(lang)
+            handler = IImageScaleHandler(field, None)
+            image = None
+            if handler is not None:
+                try:
                     image = handler.getScale(self, scale)
-            if image is not None:
-                if last and REQUEST.get('HTTP_USER_AGENT', False):
-                    _scale = scale
-                    if _scale is not None:
-                        _scale = '_'+str(_scale)
-                    else:
-                        _scale = ''
-                    REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+defaultLang+'___'+_scale)
-        field.setLanguage(lang_before)
+                except AttributeError: # no image available, do not raise as there might be one available as a fallback
+                    pass
+            if not image: # language fallback
+                defaultLang = field.getDefaultLang(self)
+                if defaultLang and not defaultLang == lang:
+                    field.setLanguage(defaultLang)
+                    if handler is not None:
+                        image = handler.getScale(self, scale)
+                if image is not None:
+                    if last and REQUEST.get('HTTP_USER_AGENT', False):
+                        _scale = scale
+                        if _scale is not None:
+                            _scale = '_'+str(_scale)
+                        else:
+                            _scale = ''
+                        REQUEST.RESPONSE.redirect(self.absolute_url()+'/'+fieldname+'___'+defaultLang+'___'+_scale)
+        finally:
+            field.setLanguage(lang_before)
         if image is not None:
             return image
         return BaseObject.__bobo_traverse__(self, REQUEST, name)

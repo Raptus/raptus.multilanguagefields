@@ -21,14 +21,16 @@ class MultilanguageWidgetMixin(Base):
         kwargs = {}
         languages = field.getAvailableLanguages(instance)
         for lang in languages:
-            field.setLanguage(lang['name'])
-            result = super(MultilanguageWidgetMixin, self).process_form(instance, field, form, empty_marker, emptyReturnsMarker, validating)
-            if result and isinstance(result, tuple):
-                values[lang['name']] = result[0]
-                kwargs[lang['name']] = result[1]
-            elif result and not result is empty_marker:
-                values[lang['name']] = result
-            field.resetLanguage()
+            try:
+                field.setLanguage(lang['name'])
+                result = super(MultilanguageWidgetMixin, self).process_form(instance, field, form, empty_marker, emptyReturnsMarker, validating)
+                if result and isinstance(result, tuple):
+                    values[lang['name']] = result[0]
+                    kwargs[lang['name']] = result[1]
+                elif result and not result is empty_marker:
+                    values[lang['name']] = result
+            finally:
+                field.resetLanguage()
         return values, kwargs
     
 class StringWidget(MultilanguageWidgetMixin, widgets.StringWidget):

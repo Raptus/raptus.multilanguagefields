@@ -48,19 +48,23 @@ def __new__post_validate(self, REQUEST=None, errors=None):
     field  = self.getPrimaryField()
     if IMultilanguageField.providedBy(field):
         lang = field._v_lang
-        field.setLanguage(field.getDefaultLang(self))
-        REQUEST.form['%s_file' % field.__name__] = REQUEST.form.get('%s_file' % field.getName())
-        field.resetLanguage()
-        if lang is not None:
-            field.setLanguage(lang)
+        try:
+            field.setLanguage(field.getDefaultLang(self))
+            REQUEST.form['%s_file' % field.__name__] = REQUEST.form.get('%s_file' % field.getName())
+        finally:
+            field.resetLanguage()
+            if lang is not None:
+                field.setLanguage(lang)
     title = self.Schema()['title']
     if IMultilanguageField.providedBy(title):
         lang = title._v_lang
-        title.setLanguage(title.getDefaultLang(self))
-        REQUEST.form[title.__name__] = REQUEST.form.get(title.getName())
-        title.resetLanguage()
-        if lang is not None:
-            title.setLanguage(lang)
+        try:
+            title.setLanguage(title.getDefaultLang(self))
+            REQUEST.form[title.__name__] = REQUEST.form.get(title.getName())
+        finally:
+            title.resetLanguage()
+            if lang is not None:
+                title.setLanguage(lang)
     self.__old__post_validate(REQUEST, errors)
 ATCTFileContent.post_validate = __new__post_validate
 LOG.info("Products.ATContentTypes.content.base.ATCTFileContent.post_validate patched")
@@ -77,42 +81,44 @@ def __new_SearchableText(self, lang=None):
         if not field.searchable:
             continue
         method = field.getIndexAccessor(self)
-        if IMultilanguageField.providedBy(field) and lang:
-            field.setLanguage(lang)
         try:
-            datum = method(mimetype="text/plain")
-        except TypeError:
-            # Retry in case typeerror was raised because accessor doesn't
-            # handle the mimetype argument
+            if IMultilanguageField.providedBy(field) and lang:
+                field.setLanguage(lang)
             try:
-                datum =  method()
-            except (ConflictError, KeyboardInterrupt):
-                raise
-            except:
-                continue
-        if datum:
-            type_datum = type(datum)
-            vocab = field.Vocabulary(self)
-            if isinstance(datum, list) or isinstance(datum, tuple):
-                # Unmangle vocabulary: we index key AND value
-                vocab_values = map(lambda value, vocab=vocab: vocab.getValue(value, ''), datum)
-                datum = list(datum)
-                datum.extend(vocab_values)
-                datum = ' '.join(datum)
-            elif isinstance(datum, basestring):
+                datum = method(mimetype="text/plain")
+            except TypeError:
+                # Retry in case typeerror was raised because accessor doesn't
+                # handle the mimetype argument
+                try:
+                    datum =  method()
+                except (ConflictError, KeyboardInterrupt):
+                    raise
+                except:
+                    continue
+            if datum:
+                type_datum = type(datum)
+                vocab = field.Vocabulary(self)
+                if isinstance(datum, list) or isinstance(datum, tuple):
+                    # Unmangle vocabulary: we index key AND value
+                    vocab_values = map(lambda value, vocab=vocab: vocab.getValue(value, ''), datum)
+                    datum = list(datum)
+                    datum.extend(vocab_values)
+                    datum = ' '.join(datum)
+                elif isinstance(datum, basestring):
+                    if isinstance(datum, unicode):
+                        datum = datum.encode(charset)
+                    value = vocab.getValue(datum, '')
+                    if isinstance(value, unicode):
+                        value = value.encode(charset)
+                    datum = "%s %s" % (datum, value, )
+
                 if isinstance(datum, unicode):
                     datum = datum.encode(charset)
-                value = vocab.getValue(datum, '')
-                if isinstance(value, unicode):
-                    value = value.encode(charset)
-                datum = "%s %s" % (datum, value, )
-
-            if isinstance(datum, unicode):
-                datum = datum.encode(charset)
-                
-            data.append(str(datum))
-        if IMultilanguageField.providedBy(field) and lang:
-            field.resetLanguage()
+                    
+                data.append(str(datum))
+        finally:
+            if IMultilanguageField.providedBy(field) and lang:
+                field.resetLanguage()
             
     data = ' '.join(data)
     return data
@@ -158,10 +164,12 @@ def __new___setitem__(self, name, field):
     if IMultilanguageField.providedBy(field):
         lang = field._v_lang
         field.resetLanguage()
-    assert name == field.getName()
-    self.addField(field)
-    if lang is not None:
-        field.setLanguage(lang)
+    try:
+        assert name == field.getName()
+        self.addField(field)
+    finally:
+        if lang is not None:
+            field.setLanguage(lang)
 Schema.Schema.__setitem__ = __new___setitem__
 LOG.info("Products.Archetypes.Schema.Schema.__setitem__ patched")
 
@@ -265,9 +273,11 @@ def __new_addField(self, field):
     if IMultilanguageField.providedBy(field):
         lang = field._v_lang
         field.resetLanguage()
-    self.__old_addField(field)
-    if lang is not None:
-        field.setLanguage(lang)
+    try:
+        self.__old_addField(field)
+    finally:
+        if lang is not None:
+            field.setLanguage(lang)
 Schema.Schemata.addField = __new_addField
 LOG.info("Products.Archetypes.Schema.Schemata.addField patched") 
 
@@ -295,9 +305,11 @@ def __new__checkPropertyDupe(self, field, propname):
     if IMultilanguageField.providedBy(field):
         lang = field._v_lang
         field.resetLanguage()
-    r = self.__old__checkPropertyDupe(field, propname)
-    if lang is not None:
-        field.setLanguage(lang)
+    try:
+        r = self.__old__checkPropertyDupe(field, propname)
+    finally:
+        if lang is not None:
+            field.setLanguage(lang)
     return r
 Schema.Schemata._checkPropertyDupe = __new__checkPropertyDupe
 LOG.info("Products.Archetypes.Schema.Schemata._checkPropertyDupe patched") 
