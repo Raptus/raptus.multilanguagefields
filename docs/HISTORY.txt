@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1b4 (unreleased)
+1.1b4 (2013-04-15)
 ------------------
 
 * Be way more defensive when setting and resetting languages on fields
