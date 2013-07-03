@@ -41,11 +41,13 @@ class Translation(BrowserView):
         header = {'User-Agent': 'Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11'}
         
         req  = urllib2.Request(u'%s?%s' % (url, params), None, header)
+        self.request.response.setHeader("Content-type","application/json")
         return urllib2.urlopen(req).read()
 
     def getTranslation(self, string, source, dest, id=0):
         result = json.loads(self.getRawTranslation(string, source, dest).decode('utf-8'));
         result[u'responseData'][u'translatedText'] = decode_htmlentities(result[u'responseData'][u'translatedText'])
+        self.request.response.setHeader("Content-type","application/json")
         return json.dumps({
             'id': id,
             'source': source,
@@ -61,6 +63,7 @@ class Translation(BrowserView):
         if field is None:
             return
         languages = [l for l in field.getAvailableLanguages(context) if not l['name'] == lang]
+        self.request.response.setHeader("Content-type","application/json")
         return json.dumps({
             'id': id,
             'data': context.translator(fieldName=fieldName, widgetType=widgetType, languages=languages, lang=lang, id=id).replace("\n", "")})

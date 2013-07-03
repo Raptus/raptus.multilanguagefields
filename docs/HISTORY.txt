@@ -4,7 +4,9 @@ Changelog
 1.1b5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Set correct http response headers for diazo to be happy.
+  Besides, do not unparse already parsed json data.
+  [kiorky]
 
 
 1.1b4 (2013-04-15)

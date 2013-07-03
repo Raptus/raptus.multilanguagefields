@@ -17,12 +17,17 @@ var translator = {
   },
   
   setTranslator : function(data) {
-    data = eval('(' + data + ')');
+    // dont unparse already loaded json data
+    if("object"!=typeof(data)) {
+        data = eval('(' + data + ')');
+    }
     translator.get(data.id).setTranslator(data.data);
   },
   
   setTranslation : function(data) {
-    data = eval('(' + data + ')');
+    if("object"!=typeof(data)) {
+        data = eval('(' + data + ')');
+    }
     translator.get(data.id).setTranslation(data);
   },
   
