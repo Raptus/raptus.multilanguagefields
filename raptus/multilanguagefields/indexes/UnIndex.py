@@ -4,7 +4,7 @@ from BTrees.IOBTree import IOBTree
 import BTrees.Length
 from BTrees.OOBTree import OOBTree
 
-from zope.app.component.hooks import getSite
+from zope.component.hooks import getSite
 
 from Products.CMFCore.utils import getToolByName
 

@@ -25,7 +25,7 @@ from raptus.multilanguagefields.interfaces import IMultilanguageField
 try:
     from zope.site.hooks import getSite
 except ImportError: # Plone < 4
-    from zope.app.component.hooks import getSite
+    from zope.component.hooks import getSite
 
 def is_blob(obj):
     return False

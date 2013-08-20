@@ -4,7 +4,7 @@
 #===============================================================================
 from Missing import MV
 from Record import Record
-from zope.app.component.hooks import getSite
+from zope.component.hooks import getSite
 from Products.ZCatalog import CatalogBrains
 from Products.ZCatalog.Catalog import Catalog, safe_callable
 from Products.CMFCore.utils import getToolByName
