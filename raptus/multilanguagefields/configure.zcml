@@ -13,7 +13,7 @@
 
   <include package="Products.CMFCore" file="permissions.zcml" zcml:condition="have plone-41"/>
   <include package=".indexes" />
-  <include package=".kss" />
+  <include package=".kss" zcml:condition="installed plone.app.kss"/>
 
   <!-- Register the installation GenericSetup extension profile -->
   <genericsetup:registerProfile
