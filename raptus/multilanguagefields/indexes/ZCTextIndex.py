@@ -5,7 +5,7 @@ from App.special_dtml import DTMLFile
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 from Products.ZCTextIndex.interfaces import ILexicon
 
-from zope.app.component.hooks import getSite
+from zope.component.hooks import getSite
 
 from Products.PluginIndexes.common import safe_callable
 from Products.CMFCore.utils import getToolByName

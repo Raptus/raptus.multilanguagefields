@@ -3,7 +3,7 @@
 from raptus.multilanguagefields import LOG
 try:
     from plone.app.imaging.interfaces import IImageScaleHandler
-    from zope.app.component.hooks import getSite
+    from zope.component.hooks import getSite
     from raptus.multilanguagefields.interfaces import IMultilanguageField
 
     def publishTraverse(self, request, name):
