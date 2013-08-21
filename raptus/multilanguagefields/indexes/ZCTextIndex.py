@@ -5,7 +5,12 @@ from App.special_dtml import DTMLFile
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 from Products.ZCTextIndex.interfaces import ILexicon
 
-from zope.component.hooks import getSite
+try:
+    # Plone < 4.3
+    from zope.app.component.hooks import getSite
+except ImportError:
+    # Plone >= 4.3
+    from zope.component.hooks import getSite
 
 from Products.PluginIndexes.common import safe_callable
 from Products.CMFCore.utils import getToolByName

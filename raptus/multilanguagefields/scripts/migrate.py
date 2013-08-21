@@ -34,7 +34,14 @@ your zope and your plone content should be back in place.
 import sys
 import transaction
 from Testing.makerequest import makerequest
-from zope.app.component import site
+
+try:
+    # Plone < 4.3
+    from zope.app.component import site
+except ImportError:
+    # Plone >= 4.3
+    from zope.site import site
+
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from raptus.multilanguagefields.interfaces import IMultilanguageField
 

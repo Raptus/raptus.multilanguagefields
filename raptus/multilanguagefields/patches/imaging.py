@@ -3,7 +3,14 @@
 from raptus.multilanguagefields import LOG
 try:
     from plone.app.imaging.interfaces import IImageScaleHandler
-    from zope.component.hooks import getSite
+
+    try:
+        # Plone < 4.3
+        from zope.app.component.hooks import getSite
+    except ImportError:
+        # Plone >= 4.3
+        from zope.component.hooks import getSite
+
     from raptus.multilanguagefields.interfaces import IMultilanguageField
 
     def publishTraverse(self, request, name):
