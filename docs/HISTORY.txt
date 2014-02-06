@@ -4,19 +4,19 @@ Changelog
 1.1b7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- use $ instead of deprecated jq
 
 
 1.1b6 (2013-08-21)
 ------------------
 
-- Plone 4.3 compatibility.
+* Plone 4.3 compatibility.
 
 
 1.1b5 (2013-07-22)
 ------------------
 
-- Set correct http response headers for diazo to be happy.
+* Set correct http response headers for diazo to be happy.
   Besides, do not unparse already parsed json data.
   [kiorky]
 

@@ -43,11 +43,11 @@ var translator = {
   
   init : function(elm) {
     var widgetType = elm.className.split(' ')[2];
-    var dds = jq(elm).find('dd');
+    var dds = $(elm).find('dd');
     for(var i=0; i<dds.length; i++) {
-      var dd = jq(dds.get(i));
+      var dd = $(dds.get(i));
       var id = dd.attr('id');
-      var fieldname = jq(dd).parents('.field').attr('id');
+      var fieldname = $(dd).parents('.field').attr('id');
       fieldname = fieldname.replace('archetypes-fieldname-','');
       var regex = new RegExp('(fieldset-)('+fieldname+')-(.*)','');
       if(!regex.test(id)) continue;
@@ -57,12 +57,12 @@ var translator = {
   }
 }
 
-translator.base = jq('base').attr('href');
+translator.base = $('base').attr('href');
 if(translator.base.substring(-1) != '/')
   translator.base += '/';
 
 translator.Translator.prototype.getTranslator = function() {
-  jq.get(translator.base+'@@getTranslator', 
+  $.get(translator.base+'@@getTranslator', 
          {fieldName: this.fieldName,
           widgetType: this.widgetType,
           lang: this.lang,
@@ -71,8 +71,8 @@ translator.Translator.prototype.getTranslator = function() {
 }
 
 translator.Translator.prototype.setTranslator = function(data) {
-  jq(this.elm).append(data);
-  jq(this.elm).find('a').click(function() {
+  $(this.elm).append(data);
+  $(this.elm).find('a').click(function() {
     translator.get(this.id.replace('translate', '')).translate();
   });
   if(this.id < translator.translators.length - 1)
@@ -83,15 +83,15 @@ translator.Translator.prototype.translate = function() {
   value = this.getValue();
   if(!value) return ;
   
-  jq(this.elm).find('.context').hide();
-  jq(this.elm).find('.spinner').show();
+  $(this.elm).find('.context').hide();
+  $(this.elm).find('.spinner').show();
   
-  dest = jq('#language'+this.id).val();
+  dest = $('#language'+this.id).val();
   if(dest == 'all') {
     dest = new Array();
-    jq('#language'+this.id+' option').each(function() {
-      if(jq(this).val() != 'all')
-        dest.push(jq(this).val());
+    $('#language'+this.id+' option').each(function() {
+      if($(this).val() != 'all')
+        dest.push($(this).val());
     });
   } else
     dest = new Array(dest);
@@ -102,37 +102,37 @@ translator.Translator.prototype.translate = function() {
 
 translator.Translator.prototype.translate_next = function() {
   if(d = this.dest.pop()) {
-    jq.get(translator.base+'@@getTranslation', 
+    $.get(translator.base+'@@getTranslation', 
            {string: this.value,
             source: this.lang,
             dest: d,
             id: this.id},
            translator.setTranslation);
   } else {
-    jq(this.elm).find('.spinner').hide();
-    jq(this.elm).find('.context').show();
+    $(this.elm).find('.spinner').hide();
+    $(this.elm).find('.context').show();
   }
 }
 
 translator.Translator.prototype.setTranslation = function(data) {
-  language = jq(this.field).find('a[href=#fieldsetlegend-'+this.fieldName+'-'+data.dest+'] span').text();
+  language = $(this.field).find('a[href=#fieldsetlegend-'+this.fieldName+'-'+data.dest+'] span').text();
   translation = data.result.responseData.translatedText.split("<break>");
   for(var i=0; i<translation.length; i++)
-    translation[i] = jq.trim(translation[i]);
+    translation[i] = $.trim(translation[i]);
   translation = translation.join("\n");
   if(!this.getValue(data.dest) || window.confirm(data.message.replace('{language}', language).replace('{translation}', translator.crop(translation, 150)))) {
     this.setValue(translation, data.dest);
-    jq(this.field).find('#fieldsetlegend-'+this.fieldName+'-'+data.dest).click();
-    jq(this.field).find('a[href="#fieldsetlegend-'+this.fieldName+'-'+data.dest+'"]').click();
+    $(this.field).find('#fieldsetlegend-'+this.fieldName+'-'+data.dest).click();
+    $(this.field).find('a[href="#fieldsetlegend-'+this.fieldName+'-'+data.dest+'"]').click();
   }
   this.translate_next();
 }
 
 translator.Translator.prototype.getValue = function(lang) {
   if(lang)
-    elm = jq(this.field).find('#fieldset-'+this.fieldName+'-'+lang);
+    elm = $(this.field).find('#fieldset-'+this.fieldName+'-'+lang);
   else
-    elm = jq(this.elm);
+    elm = $(this.elm);
   switch(this.widgetType) {
     case 'string':
       return elm.find('input').val();
@@ -154,7 +154,7 @@ translator.Translator.prototype.getValue = function(lang) {
       if (typeof FCKeditorAPI != 'undefined') {
         try {
           if (lang) fieldId = this.fieldName+'___'+lang+'___';
-          else fieldId = jq('.fcklinkedField', elm).attr('id');
+          else fieldId = $('.fcklinkedField', elm).attr('id');
           return FCKeditorAPI.GetInstance(fieldId).GetXHTML();
         } catch(e) {};
       }
@@ -173,14 +173,14 @@ translator.Translator.prototype.getValue = function(lang) {
         } catch(e) {};
       }
       // TODO : other editor implementation
-      else if(jq('textarea', elm).length)
+      else if($('textarea', elm).length)
         return elm.find('textarea').val();
       break;
   }
 }
 
 translator.Translator.prototype.setValue = function(value, lang) {
-  elm = jq(this.field).find('#fieldset-'+this.fieldName+'-'+lang);
+  elm = $(this.field).find('#fieldset-'+this.fieldName+'-'+lang);
   switch(this.widgetType) {
     case 'string':
       elm.find('input').val(value);
@@ -215,7 +215,7 @@ translator.Translator.prototype.setValue = function(value, lang) {
       if (typeof FCKeditorAPI != 'undefined') {
         try {
           if (lang) fieldId = this.fieldName+'___'+lang+'___';
-          else fieldId = jq('.fcklinkedField', elm).attr('id');
+          else fieldId = $('.fcklinkedField', elm).attr('id');
           FCKeditorAPI.GetInstance(this.fieldName+'___'+lang+'___').SetHTML(value);
           return;
         } catch(e) {};
@@ -236,15 +236,15 @@ translator.Translator.prototype.setValue = function(value, lang) {
         } catch(e) {};
       }
       // TODO : other editor implementation
-      else if (jq('textarea', elm).length) {
+      else if ($('textarea', elm).length) {
         elm.find('textarea').val(value);
       }
       break;
   }
 }
 
-jq('document').ready(function() {
-  jq('.hasTranslator').each(function() {
+$('document').ready(function() {
+  $('.hasTranslator').each(function() {
     translator.init(this);
   });
 });
