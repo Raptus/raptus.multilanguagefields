@@ -40,7 +40,7 @@ except ImportError:
 
 class MultilanguageFieldMixin(Base):
     implements(IMultilanguageField)
-    
+
     security = ClassSecurityInfo()
     _v_lang = None
 
@@ -62,7 +62,7 @@ class MultilanguageFieldMixin(Base):
         return getattr(self, '_required', False)
     required = property(fget=_get_required,
                         fset=_set_required)
-    
+
     def _getTool(self, context):
         try:
             return getToolByName(context, 'portal_languages')
@@ -72,7 +72,7 @@ class MultilanguageFieldMixin(Base):
             except:
                 pass
         return None
-    
+
     def _getCurrentLanguage(self, context):
         try:
             return self._getTool(context).getPreferredLanguage()
@@ -99,7 +99,7 @@ class MultilanguageFieldMixin(Base):
         if self._v_lang is not None:
             return '%s___%s___' % (self.__name__, self._v_lang)
         return self.__name__
-    
+
     security.declarePrivate('getAvailableLanguages')
     def getAvailableLanguages(self, context):
         request = aq_get(context, 'REQUEST')
@@ -110,7 +110,7 @@ class MultilanguageFieldMixin(Base):
             default_marker = " (%s)" % translate(_(u"default language"), context=request)
         else:
             default_marker = ""
-        langs = [{'name': name, 
+        langs = [{'name': name,
                   'title': translate(languages.get(name, title), context=request) +
                            (name == default and default_marker or "")} for name, title in self._getTool(context).listSupportedLanguages()]
         def default_first(x, y):
@@ -125,23 +125,23 @@ class MultilanguageFieldMixin(Base):
         self.resetLanguage()
         if not lang == 'original':
             self._v_lang = lang
-    
+
     security.declarePrivate('resetLanguage')
     def resetLanguage(self):
         self._v_lang = None
-        
+
     security.declarePrivate('getCallable')
     def getCallable(self, instance, lang):
         def callable(**kwargs):
             return self.get(instance, lang=lang, **kwargs)
         return callable
-    
+
     def _getLangFromStorage(self, instance, lang):
         try:
             return self.getStorage(instance).get('%s___%s___' % (self.__name__, lang), instance)
         except AttributeError:
             return None
-    
+
     security.declarePrivate('set')
     def set(self, instance, value, **kwargs):
         """
@@ -149,7 +149,7 @@ class MultilanguageFieldMixin(Base):
         if value is not a dict, set the value for the current language
         """
         reset = True
-        if kwargs.get('_initializing_', False) and not isinstance(value, dict) and isinstance(self, TextField):
+        if kwargs.get('_initializing_', False) and not isinstance(value, dict):
             try:
                 languages = self._getTool(instance).listSupportedLanguages()
             except AttributeError:
@@ -181,7 +181,7 @@ class MultilanguageFieldMixin(Base):
             classgenerator = ClassGenerator()
             generator.makeMethod(type(instance.aq_base), self, 'r', self.getName())
             classgenerator.updateSecurity(type(instance.aq_base), self, 'r', self.getName())
-    
+
     def _get_lang(self, instance, **kwargs):
         if kwargs.has_key('lang'):
             return kwargs['lang']
@@ -192,7 +192,7 @@ class MultilanguageFieldMixin(Base):
         except:
             pass
         return self._getCurrentLanguage(instance)
-    
+
     security.declarePrivate('get')
     def get(self, instance, **kwargs):
         if self._v_lang:
@@ -243,7 +243,7 @@ class MultilanguageFieldMixin(Base):
             finally:
                 self.resetLanguage()
         return value
-    
+
     security.declarePrivate('getAll')
     def getAll(self, instance, **kwargs):
         languages = self.getAvailableLanguages(instance)
@@ -251,7 +251,7 @@ class MultilanguageFieldMixin(Base):
         for lang in languages:
             value[lang['name']] = self.get(instance, lang=lang['name'])
         return value
-    
+
     security.declarePrivate('validate')
     def validate(self, value, instance, errors=None, **kwargs):
         """ multilingual validation respecting language fallback
@@ -301,63 +301,63 @@ class MultilanguageFieldMixin(Base):
 
     def __repr__(self):
         """
-        Return a string representation consisting of name of the  class, 
+        Return a string representation consisting of name of the  class,
         type and permissions.
         """
         name = self.__name__
         return "<Field %s(%s:%s)>" % (name, self.type, self.mode)
-    
+
 class StringField(MultilanguageFieldMixin, fields.StringField):
     _properties = fields.StringField._properties.copy()
-    
+
 class FileField(MultilanguageFieldMixin, fields.FileField):
-    _properties = fields.FileField._properties.copy()  
-    
+    _properties = fields.FileField._properties.copy()
+
 class TextField(MultilanguageFieldMixin, fields.TextField):
     _properties = fields.TextField._properties.copy()
-    
+
 class DateTimeField(MultilanguageFieldMixin, fields.DateTimeField):
     _properties = fields.DateTimeField._properties.copy()
-    
+
 class LinesField(MultilanguageFieldMixin, fields.LinesField):
     _properties = fields.LinesField._properties.copy()
-    
+
 class IntegerField(MultilanguageFieldMixin, fields.IntegerField):
     _properties = fields.IntegerField._properties.copy()
-    
+
 class FloatField(MultilanguageFieldMixin, fields.FloatField):
     _properties = fields.FloatField._properties.copy()
-    
+
 class FixedPointField(MultilanguageFieldMixin, fields.FixedPointField):
     _properties = fields.FixedPointField._properties.copy()
     _properties.update({
         'validators' : ('isDecimalMultilanguage'),
         })
-    
+
 class ReferenceField(MultilanguageFieldMixin, fields.ReferenceField):
     _properties = fields.ReferenceField._properties.copy()
-    
+
     security = ClassSecurityInfo()
-    
+
     def __init__(self, name=None, **kwargs):
         self._relationship = kwargs['relationship']
         super(ReferenceField, self).__init__(name, **kwargs)
-    
+
     @property
     def relationship(self):
         lang = self._v_lang
         if lang is None:
             lang = self._getCurrentLanguage(getSite())
         return '%s___%s___' % (self._relationship, lang)
-    
+
 class BooleanField(MultilanguageFieldMixin, fields.BooleanField):
     _properties = fields.BooleanField._properties.copy()
-    
+
 class ImageField(MultilanguageFieldMixin, fields.ImageField):
     _properties = fields.ImageField._properties.copy()
-    
+
     security = ClassSecurityInfo()
-    
+
     security.declareProtected(View, 'getScale')
     def getScale(self, instance, scale=None, **kwargs):
         """Get scale by name or original
@@ -398,17 +398,17 @@ class ImageField(MultilanguageFieldMixin, fields.ImageField):
             return tag
         finally:
             self.resetLanguage()
-    
+
 try:
     from urlparse import urlparse
     from plone.app.blob.field import ImageField as BaseBlobImageField, FileField as BaseBlobFileField
     from plone.app.blob.interfaces import IATBlobFile, IATBlobImage
     from plone.app.imaging.interfaces import IImageScaleHandler
-    
+
     class MultilanguageBlobFieldMixin(Base):
-        
+
         security = ClassSecurityInfo()
-        
+
         security.declareProtected(View, 'index_html')
         def index_html(self, instance, REQUEST=None, RESPONSE=None, disposition='inline'):
             """ make it directly viewable when entering the objects URL """
@@ -424,7 +424,7 @@ try:
                 return super(MultilanguageBlobFieldMixin, self).index_html(instance, REQUEST=REQUEST, RESPONSE=RESPONSE, disposition=disposition)
             finally:
                 self.resetLanguage()
-    
+
     class BlobFileField(MultilanguageFieldMixin, MultilanguageBlobFieldMixin, BaseBlobFileField):
         _properties = BaseBlobFileField._properties.copy()
 
@@ -433,26 +433,26 @@ try:
         security.declarePrivate('getUnwrapped')
         def getUnwrapped(self, instance, **kwargs):
             return super(BlobFileField, self).get(instance, **kwargs)
-    
+
         def set(self, instance, value, **kwargs):
             super(BlobFileField, self).set(instance, value, **kwargs)
             if not kwargs.get('_initializing_', False) and (IATBlobFile.providedBy(instance) or isinstance(instance, ATFile)):
                 self.fixAutoId(instance)
-    
+
     class BlobImageField(MultilanguageFieldMixin, MultilanguageBlobFieldMixin, BaseBlobImageField):
         _properties = BaseBlobImageField._properties.copy()
-    
+
         security = ClassSecurityInfo()
 
         security.declarePrivate('getUnwrapped')
         def getUnwrapped(self, instance, **kwargs):
             return super(BlobImageField, self).get(instance, **kwargs)
-    
+
         def set(self, instance, value, **kwargs):
             super(BlobImageField, self).set(instance, value, **kwargs)
             if not kwargs.get('_initializing_', False) and (IATBlobImage.providedBy(instance) or isinstance(instance, ATImage)):
                 self.fixAutoId(instance)
-    
+
         security.declareProtected(View, 'tag')
         def tag(self, instance, scale=None, height=None, width=None, alt=None,
                 css_class=None, title=None, **kwargs):
@@ -473,7 +473,7 @@ try:
                 return tag
             finally:
                 self.resetLanguage()
-    
+
         security.declareProtected(View, 'getScale')
         def getScale(self, instance, scale=None, **kwargs):
             """ get scale by name or original """
@@ -502,7 +502,7 @@ try:
                   description='Used for storing images in blobs')
 except ImportError:
     pass
-    
+
 registerField(StringField,
               title='Multilanguage String',
               description='Used for storing simple strings')

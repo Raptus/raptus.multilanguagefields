@@ -4,13 +4,14 @@ Changelog
 1.1b8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Removed a condition preventing the image field from getting the initial BlobWrapper which
+  resulted ultimately in an BadRequest: The id <image_id> is invalid - it is already in use. error
 
 
 1.1b7 (2014-02-06)
 ------------------
 
-- use $ instead of deprecated jq
+* use $ instead of deprecated jq
 
 
 1.1b6 (2013-08-21)
