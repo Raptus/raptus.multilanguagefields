@@ -318,7 +318,11 @@ LOG.info("Products.Archetypes.Schema.Schemata._checkPropertyDupe patched")
 annotation.AnnotationStorage.__old__cleanup = annotation.AnnotationStorage._cleanup
 def __new__cleanup(self, name, instance, value, **kwargs):
     if shasattr(instance, name) and not callable(getattr(instance, name)):
-        delattr(instance, name)
+        try:
+            delattr(instance, name)
+        except AttributeError:
+            # catch occasionally raised AttributeError when trying to remove ATFieldProperty
+            pass
 annotation.AnnotationStorage._cleanup = __new__cleanup
 LOG.info("Products.Archetypes.Storage.annotation.AnnotationStorage._cleanup patched")
 

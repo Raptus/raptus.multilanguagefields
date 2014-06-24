@@ -4,13 +4,13 @@ Changelog
 1.1b9 (unreleased)
 ------------------
 
-- Nothing changed yet.
+* Catched cases of undeletable ATFieldProperties in AnnotationStorage cleanup
 
 
 1.1b8 (2014-02-12)
 ------------------
 
-- Removed a condition preventing the image field from getting the initial BlobWrapper which
+* Removed a condition preventing the image field from getting the initial BlobWrapper which
   resulted ultimately in an BadRequest: The id <image_id> is invalid - it is already in use. error
 
 
