@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1b9 (unreleased)
+1.1b9 (2014-06-24)
 ------------------
 
 * Catched cases of undeletable ATFieldProperties in AnnotationStorage cleanup
