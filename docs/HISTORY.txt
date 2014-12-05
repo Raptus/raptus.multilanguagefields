@@ -1,10 +1,10 @@
 Changelog
 =========
 
-1.1b10 (unreleased)
+1.1b10 (2014-12-05)
 -------------------
 
-- Nothing changed yet.
+* Renamed protected TAL keyword 'translate' to 'multilanguage'
 
 
 1.1b9 (2014-06-24)
