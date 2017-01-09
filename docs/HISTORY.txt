@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1b11 (unreleased)
+1.1b11 (2017-01-09)
 -------------------
 
 - Nothing changed yet.
