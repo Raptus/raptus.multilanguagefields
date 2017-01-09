@@ -2,6 +2,8 @@ from ExtensionClass import Base
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_get
 
+from threading import local
+
 from zope.interface import implements
 from zope.component import queryMultiAdapter
 from zope.i18n import translate
@@ -38,11 +40,27 @@ try:
 except ImportError:
     pass
 
+class LangStorage(local):
+    lang = None
+
 class MultilanguageFieldMixin(Base):
     implements(IMultilanguageField)
 
     security = ClassSecurityInfo()
-    _v_lang = None
+
+    _lang = None
+
+    def get_v_lang(self):
+        if self._lang is None:
+            return None
+        return self._lang.lang
+
+    def set_v_lang(self, lang):
+        if self._lang is None:
+            self._lang = LangStorage()
+        self._lang.lang = lang
+
+    _v_lang = property(get_v_lang, set_v_lang)
 
     # making required fields not required if language fallback is enabled
     # and the current language is not the default one
