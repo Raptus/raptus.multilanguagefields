@@ -270,14 +270,21 @@ LOG.info("Products.Archetypes.Schema.BasicSchema.validate patched")
 Schema.Schemata.__old_addField = Schema.Schemata.addField
 def __new_addField(self, field):
     lang = None
+    existing_lang = None
     if IMultilanguageField.providedBy(field):
         lang = field._v_lang
         field.resetLanguage()
+    existing = self.get(field.getName())
+    if existing is not None and IMultilanguageField.providedBy(existing):
+        existing_lang = existing._v_lang
+        existing.resetLanguage()
     try:
         self.__old_addField(field)
     finally:
         if lang is not None:
             field.setLanguage(lang)
+        if existing_lang is not None:
+            existing.setLanguage(existing_lang)
 Schema.Schemata.addField = __new_addField
 LOG.info("Products.Archetypes.Schema.Schemata.addField patched") 
 
@@ -287,14 +294,21 @@ def __new__validateOnAdd(self, field):
     """Validates fields on adding and bootstrapping
     """
     lang = None
+    existing_lang = None
     if IMultilanguageField.providedBy(field):
         lang = field._v_lang
         field.resetLanguage()
+    existing = self.get(field.getName())
+    if existing is not None and IMultilanguageField.providedBy(existing):
+        existing_lang = existing._v_lang
+        existing.resetLanguage()
     try:
         self.__old__validateOnAdd(field)
     finally:
         if lang is not None:
             field.setLanguage(lang)
+        if existing_lang is not None:
+            existing.setLanguage(existing_lang)
 Schema.Schemata._validateOnAdd = __new__validateOnAdd
 LOG.info("Products.Archetypes.Schema.Schemata._validateOnAdd patched") 
 
